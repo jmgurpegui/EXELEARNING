@@ -1,0 +1,11 @@
+{
+  "name": "antigravity-exelearning-plugin",
+  "version": "1.0.0",
+  "description": "Generador, maquetador y validador de cursos interactivos SCORM 1.2 para eXeLearning, EducaMadrid y Moodle con firmas de autenticidad.",
+  "author": {
+    "name": "jm gurpegui",
+    "email": "jmgurpegui@gmail.com"
+  },
+  "repository": "https://github.com/jmgurpegui/antigravity-exelearning-plugin",
+  "license": "MIT"
+}

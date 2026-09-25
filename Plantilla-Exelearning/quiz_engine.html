@@ -1,0 +1,115 @@
+<article class="box no-header"><header class="box-head no-icon"><button class="box-toggle box-toggle-on" title="Mostrar/ocultar"><span>Mostrar/ocultar</span></button></header>
+<div class="box-content"><div class="exe-static-content">
+
+<div id="quiz-progress">Respondidas: <span id="qp-count">0</span> / <span id="qp-total">0</span>
+  <div class="bar"><i id="qp-bar"></i></div>
+</div>
+<form id="quiz-form" onsubmit="return false;"></form>
+<div class="quiz-actions">
+  <button type="button" id="btn-corregir" class="btn-curso" disabled>Corregir</button>
+  <button type="button" id="btn-reintentar" class="btn-curso sec" style="display:none;">Volver a intentarlo</button>
+</div>
+<div id="quiz-result">
+  <div class="res-head"><h3 id="res-title"></h3><div class="res-score"><span id="res-pct">0</span>%</div><div id="res-line"></div></div>
+  <div class="res-body"><p id="res-msg"></p><p class="aviso-scorm">La calificación se envía al aula virtual (LMS) mediante SCORM 1.2.</p></div>
+</div>
+
+</div></div></article>
+
+<script>
+/* ====== PREGUNTAS Y NOTA DE CORTE ======
+   El marcador de abajo se sustituye por el contenido real (array PREGUNTAS y
+   variable PASS) al montar la página del cuestionario. No lo borres a mano;
+   sustituye el marcador completo por tu bloque de preguntas. */
+/*__PREGUNTAS__*/
+
+var RANDOMIZE_OPTIONS = (typeof RANDOMIZE_OPTIONS !== "undefined") ? RANDOMIZE_OPTIONS : true;
+var LET=["A","B","C","D","E","F","G","H"];
+function typeset(){ if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise();} }
+function renderQuiz(){
+  var f=document.getElementById("quiz-form"),h="";
+  document.getElementById("qp-total").textContent=PREGUNTAS.length;
+  PREGUNTAS.forEach(function(p,i){
+    var items = [];
+    for(var j=0; j<p.opts.length; j++){
+      items.push({text: p.opts[j], origIdx: j});
+    }
+    var doShuffle = (typeof p.shuffle !== "undefined") ? p.shuffle : RANDOMIZE_OPTIONS;
+    if(doShuffle && items.length > 1){
+      for(var k=items.length-1; k>0; k--){
+        var r = Math.floor(Math.random()*(k+1));
+        var tmp = items[k]; items[k] = items[r]; items[r] = tmp;
+      }
+    }
+    p._displayOpts = items;
+    var dispCorrect = -1;
+    for(var k=0; k<items.length; k++){
+      if(items[k].origIdx === p.correct){ dispCorrect = k; break; }
+    }
+    p._displayCorrect = dispCorrect;
+
+    h+='<div class="pregunta" id="preg-'+i+'"><div class="q-num">Pregunta '+(i+1)+' de '+PREGUNTAS.length+'</div>';
+    h+='<div class="q-text">'+p.q+(p.ctx?'<span class="q-ctx">'+p.ctx+'</span>':'')+'</div><ul class="opciones">';
+    items.forEach(function(item,j){var id="q"+i+"o"+j;
+      h+='<li><label for="'+id+'"><input type="radio" id="'+id+'" name="q'+i+'" value="'+j+'"><span class="op-let">'+LET[j]+')</span> <span>'+item.text+'</span></label></li>';});
+    h+='</ul><div class="feedback"><span class="fb-cap"></span> <span class="fb-txt"></span></div></div>';
+  });
+  f.innerHTML=h; f.removeEventListener("change",updateProgress); f.addEventListener("change",updateProgress); typeset();
+}
+function answered(){var n=0;for(var i=0;i<PREGUNTAS.length;i++){if(document.querySelector('input[name="q'+i+'"]:checked'))n++;}return n;}
+function updateProgress(){var n=answered();document.getElementById("qp-count").textContent=n;
+  document.getElementById("qp-bar").style.width=(100*n/PREGUNTAS.length)+"%";
+  document.getElementById("btn-corregir").disabled=(n<PREGUNTAS.length);}
+function corregir(){
+  var ok=0;
+  PREGUNTAS.forEach(function(p,i){
+    var box=document.getElementById("preg-"+i),sel=document.querySelector('input[name="q'+i+'"]:checked');
+    var ch=sel?parseInt(sel.value,10):-1,labels=box.querySelectorAll(".opciones label");
+    var targetCorrect = (typeof p._displayCorrect !== "undefined" && p._displayCorrect >= 0) ? p._displayCorrect : p.correct;
+    box.classList.remove("ok","ko");Array.prototype.forEach.call(box.querySelectorAll("label"),function(l){l.classList.remove("sel","correcta");});
+    if(ch>=0&&labels[ch])labels[ch].classList.add("sel");
+    if(targetCorrect>=0&&labels[targetCorrect])labels[targetCorrect].classList.add("correcta");
+    var cap=box.querySelector(".fb-cap"),txt=box.querySelector(".fb-txt");
+    if(ch===targetCorrect){ok++;box.classList.add("ok");cap.textContent="¡Correcto! ";}
+    else{
+      box.classList.add("ko");
+      var letCorrect = (targetCorrect>=0&&targetCorrect<LET.length)?LET[targetCorrect]:(targetCorrect+1);
+      cap.textContent="Respuesta correcta: "+letCorrect+". ";
+    }
+    txt.innerHTML=p.fb; Array.prototype.forEach.call(box.querySelectorAll("input"),function(x){x.disabled=true;});
+  });
+  var pct=Math.round(100*ok/PREGUNTAS.length),passed=pct>=PASS,res=document.getElementById("quiz-result");
+  res.classList.remove("pass","fail");res.classList.add(passed?"pass":"fail");
+  document.getElementById("res-title").textContent=passed?"¡Cuestionario superado!":"No superado";
+  document.getElementById("res-pct").textContent=pct;
+  document.getElementById("res-line").innerHTML="<strong>"+ok+" / "+PREGUNTAS.length+"</strong> respuestas correctas";
+  document.getElementById("res-msg").textContent=passed?"¡Bien hecho! Revisa las explicaciones para afianzar.":"Repasa el contenido y vuelve a intentarlo.";
+  res.style.display="block";
+  reportarSCORM(pct,passed);
+  document.getElementById("btn-corregir").style.display="none";
+  document.getElementById("btn-reintentar").style.display="inline-block";
+  typeset(); res.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function reintentar(){
+  renderQuiz();
+  document.getElementById("quiz-result").style.display="none";
+  document.getElementById("btn-reintentar").style.display="none";
+  document.getElementById("btn-corregir").style.display="inline-block";
+  document.getElementById("btn-corregir").disabled=true;
+  updateProgress();
+  var firstQ = document.getElementById("preg-0");
+  if(firstQ){firstQ.scrollIntoView({behavior:"smooth",block:"start"});}
+}
+function reportarSCORM(pct,passed){
+  try{ if(typeof pipwerks==="undefined"||!pipwerks.SCORM)return; var s=pipwerks.SCORM;
+    s.SetScoreMin(0);s.SetScoreMax(100);s.SetScoreRaw(pct);
+    s.SetCompletionScormActivity(passed?"passed":"failed");
+    if(typeof exitPageStatus!=="undefined"){exitPageStatus=true;} s.save();
+  }catch(e){}
+}
+document.addEventListener("DOMContentLoaded",function(){
+  renderQuiz();updateProgress();
+  document.getElementById("btn-corregir").addEventListener("click",corregir);
+  document.getElementById("btn-reintentar").addEventListener("click",reintentar);
+});
+</script>
