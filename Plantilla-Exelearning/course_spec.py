@@ -142,3 +142,21 @@ BODIES["cuestionario"] = box("Cuestionario de Evaluación", "activity", r"""
   <p>Responde a las siguientes preguntas para comprobar tu nivel de asimilación de los contenidos. Al terminar, pulsa en <strong>Corregir</strong> para obtener tu puntuación y registrar tu progreso en el aula virtual.</p>
 </div>
 """, prefix="../") + _QUIZ_ENGINE.replace("/*__PREGUNTAS__*/", _PREGUNTAS_JS) + nav_block("cuestionario")
+
+# ---------------------------------------------------------------------------
+# 3. DESTINO GOOGLE DRIVE / NUBE (SINCRONIZACIÓN Y ENTREGA)
+# ---------------------------------------------------------------------------
+# URL o ID de la carpeta de Google Drive donde se depositará el paquete SCORM final:
+# Ejemplos admitidos:
+#   - "https://drive.google.com/drive/folders/1ZDaXiUeZ61kx-gTUsmo-gavCCB2T_sqR"
+#   - "https://drive.google.com/drive/u/0/folders/1ZDaXiUeZ61kx-gTUsmo-gavCCB2T_sqR"
+#   - "1ZDaXiUeZ61kx-gTUsmo-gavCCB2T_sqR"
+GDRIVE_FOLDER_URL = ""
+GDRIVE_FOLDER_ID = ""   # Opcional (si se deja vacío, se extrae automáticamente de GDRIVE_FOLDER_URL)
+
+# Ruta local de sincronización (opcional, para entornos con Google Drive for Desktop):
+# None = detección automática de unidades virtuales montadas (G:\, H:\, etc. o /mnt/g/)
+GDRIVE_LOCAL_PATH = None
+
+# Activar exportación/sincronización automática al ejecutar build.py
+GDRIVE_AUTO_EXPORT = True

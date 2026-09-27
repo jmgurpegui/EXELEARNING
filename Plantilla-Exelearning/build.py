@@ -305,6 +305,10 @@ def main():
     sys.modules["gen_common"] = gen_common
     gen_content_xml = load_module(os.path.join(core_dir, "gen_content_xml.py"), "gen_content_xml")
 
+    # Cargar módulo de exportación y sincronización con Google Drive
+    gdrive_export_path = os.path.join(core_dir, "gdrive_export.py")
+    gdrive_export = load_module(gdrive_export_path, "gdrive_export") if os.path.isfile(gdrive_export_path) else None
+
     # Cargar especificación del curso
     course_spec = load_module(spec_path, "course_spec")
 
@@ -335,6 +339,10 @@ def main():
 
     # Empaquetado ZIP
     zip_path = create_scorm_zip(course_dir, pkg_dir, gen_common.COURSE)
+
+    # 6. Sincronización / Exportación automática a Google Drive
+    if gdrive_export:
+        gdrive_export.export_course_to_gdrive(zip_path, course_spec, course_dir)
 
     print("\n" + "=" * 65)
     print(" 🎉 PROCESO COMPLETADO CON ÉXITO")

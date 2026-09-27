@@ -24,11 +24,11 @@ python3 build.py
 ```
 *(También puedes compilar desde fuera pasando la ruta: `python3 Plantilla-Exelearning/build.py MiNuevoCurso`)*
 
-**El script realiza automáticamente todo el proceso:**
-1. Monta el runtime eXe y recursos multimedia en `pkg/`.
-2. Genera los archivos HTML y las firmas de autenticidad (`content.xml`, `imslrm.xml`, `imsmanifest.xml`).
-3. Valida la sintaxis XML, la conformidad estricta contra `content.dtd` y la consistencia disco <-> manifiesto (0 errores).
-4. Genera el entregable comprimido **`<Nombre_del_Curso>_SCORM.zip`** listo para subir a Moodle / EducaMadrid.
+    1. Monta el runtime eXe y recursos multimedia en `pkg/`.
+    2. Genera los archivos HTML y las firmas de autenticidad (`content.xml`, `imslrm.xml`, `imsmanifest.xml`).
+    3. Valida la sintaxis XML, la conformidad estricta contra `content.dtd` y la consistencia disco <-> manifiesto (0 errores).
+    4. Genera el entregable comprimido **`<Nombre_del_Curso>_SCORM.zip`** listo para subir a Moodle / EducaMadrid.
+    5. Deposita y sincroniza automáticamente el paquete en la carpeta correspondiente de **Google Drive** y en el repositorio local de cursos.
 
 ---
 
@@ -37,7 +37,7 @@ python3 build.py
 ```
 Plantilla-Exelearning/
 ├── README.md                      # Esta guía simplificada y optimizada
-├── course_spec.py                 # Especificación del curso (título, páginas, HTML y test)
+├── course_spec.py                 # Especificación del curso (título, páginas, HTML, test y Google Drive)
 ├── quiz_engine.html               # Motor JavaScript de autoevaluación con reporte SCORM
 ├── Ficha_de_encargo_del_curso.docx # Ficha editable para toma de requerimientos
 ├── media/                         # Recursos propios aportados por el autor
@@ -48,7 +48,8 @@ Plantilla-Exelearning/
 ├── build.py                       # Compilador, validador y empaquetador automático
 ├── core/                          # Motor interno de generación
 │   ├── gen_common.py              # Funciones auxiliares de maquetación HTML y navegación
-│   └── gen_content_xml.py         # Generador de firmas eXeLearning y metadatos LOM-ES
+│   ├── gen_content_xml.py         # Generador de firmas eXeLearning y metadatos LOM-ES
+│   └── gdrive_export.py           # Conector de sincronización con Google Drive (Desktop y API)
 └── runtime/                       # Runtime validado de eXeLearning (librerías, tema, MathJax, DTD)
 ```
 
@@ -131,3 +132,27 @@ var PASS = 50; // 50% mínimo para aprobar
 2. Selecciona **"Añadir una actividad o recurso"** ➡️ **"Paquete SCORM"**.
 3. Sube el archivo **`.zip`** generado por `build.py` (sin descomprimir).
 4. Configura intentos y calificación según prefieras y guarda los cambios.
+
+---
+
+## ☁️ Integración y Sincronización con Google Drive
+
+La plantilla permite depositar automáticamente el entregable final en la carpeta de Google Drive que hayas utilizado como fuente de información o almacén de entrega:
+
+### Configuración en `course_spec.py`:
+```python
+# URL completa o ID de la carpeta de Google Drive:
+GDRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1ZDaXiUeZ61kx-gTUsmo-gavCCB2T_sqR"
+GDRIVE_FOLDER_ID = ""   # Opcional (se extrae automáticamente si se omite)
+GDRIVE_LOCAL_PATH = None # Opcional: ruta local personalizada
+GDRIVE_AUTO_EXPORT = True # Activa la exportación al compilar
+```
+
+### Métodos de Entrega Soportados:
+1. **Google Drive for Desktop (Sincronización en segundo plano)**:
+   - Al ejecutar `build.py`, si la aplicación Google Drive for Desktop está iniciada, detecta la unidad virtual (`G:\Mi unidad` o `/mnt/g/`) y deposita el `.zip` directamente para que se sincronice en la nube.
+2. **Google Drive API v3 (Subida directa a la nube)**:
+   - Si se coloca un archivo `credentials.json` o `token.json` (OAuth2 o cuenta de servicio), el script sube y actualiza el archivo en Google Drive automáticamente mediante la API.
+3. **Repositorio local y enlace de entrega**:
+   - Guarda una copia de seguridad en tu carpeta de entregas (`H:\0-TRAINING\Scorm` y `Descargas`) y muestra en la consola el enlace web directo a la carpeta de Google Drive para subir con un solo clic.
+
