@@ -81,13 +81,17 @@ with open(os.path.join(spec_dir, "quiz_engine.html"), encoding="utf-8") as _f:
 
 _PREGUNTAS_JS = r"""
 // Configuración del cuestionario:
-// RANDOMIZE_OPTIONS: activa la aleatorización automática de opciones en cada intento del alumno (por defecto true).
+// NUM_PREGUNTAS: número de preguntas mostradas de 1 en 1 por intento (ej. 20 de un banco de 50).
+var NUM_PREGUNTAS = 20;
+
+// RANDOMIZE_OPTIONS: activa el barajado aleatorio de opciones con guardián anti-patrones.
+// Garantiza que la opción correcta no sea predecible (evita rachas A, A, A o ciclos A, B, C, D).
 var RANDOMIZE_OPTIONS = true;
 
-// REGLA PEDAGÓGICA Y DE AUTORÍA:
-// Distribuye las respuestas correctas de forma aleatoria y equilibrada entre las distintas
-// opciones (0 = A, 1 = B, 2 = C, 3 = D). NUNCA coloques la respuesta correcta siempre en la primera
-// opción (índice 0) ni sigas un patrón secuencial o predecible.
+// PASS: porcentaje mínimo para superar la evaluación (registrado en LMS mediante SCORM 1.2).
+var PASS = 50;
+
+// BANCO DE PREGUNTAS (ej. 50 preguntas):
 var PREGUNTAS = [
   {
     q: "¿Cuál es el objetivo principal de este procedimiento?",

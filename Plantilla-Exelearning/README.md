@@ -91,13 +91,19 @@ Funciona 100% offline sin dependencias externas:
 
 ## 📝 Configuración del Cuestionario SCORM
 
-En `course_spec.py`, define `RANDOMIZE_OPTIONS`, el array `PREGUNTAS` y el porcentaje de aprobado `PASS`:
+El motor interactivo (`quiz_engine.html`) incluye presentación **pregunta a pregunta (1 en 1)**, muestreo aleatorio de banco de preguntas y guardián anti-patrones:
+
 ```javascript
-// Activa el barajado aleatorio automático de opciones en cada intento (por defecto true)
+// Número de preguntas mostradas por intento (ej. 20 extraídas de un banco de 50)
+var NUM_PREGUNTAS = 20;
+
+// Activa el barajado aleatorio de alternativas con guardián anti-patrones (por defecto true)
 var RANDOMIZE_OPTIONS = true;
 
-// IMPORTANTE: Distribuye las respuestas correctas de forma aleatoria entre 0, 1, 2 y 3 (A, B, C, D).
-// Evita poner siempre la primera opción (índice 0) como correcta para evitar patrones predecibles.
+// Porcentaje mínimo para aprobar
+var PASS = 50;
+
+// Banco completo de preguntas (ej. 50 preguntas):
 var PREGUNTAS = [
   {
     q: "¿Cuál es la unidad de medida de la resistencia eléctrica en el SI?",
@@ -105,24 +111,15 @@ var PREGUNTAS = [
     correct: 1, // Opción B
     fb: "Correcto. El Ohmio (Ω) es la unidad de resistencia eléctrica."
   },
-  {
-    q: "¿Qué instrumento se conecta en paralelo para verificar una diferencia de potencial?",
-    opts: ["Voltímetro", "Amperímetro en serie", "Óhmetro con tensión", "Tacómetro"],
-    correct: 0, // Opción A
-    fb: "Efectivamente, el voltímetro se conecta siempre en paralelo al componente."
-  },
-  {
-    q: "¿Cuál de las siguientes afirmaciones describe la ley de Ohm en corriente continua?",
-    opts: ["I = V · R", "P = V / I", "I = V / R", "R = V · I"],
-    correct: 2, // Opción C
-    fb: "Exacto. La intensidad de corriente es directamente proporcional al voltaje e inversamente a la resistencia."
-  }
+  // ... resto de preguntas del banco ...
 ];
-var PASS = 50; // 50% mínimo para aprobar
 ```
-- **Aleatorización automática**: El motor (`quiz_engine.html`) baraja las alternativas de cada pregunta de forma aleatoria por cada intento del alumno, recalculando automáticamente la letra correcta en pantalla (A, B, C, D) y la retroalimentación.
-- **Preguntas con orden fijo**: Si una pregunta concreta incluye opciones como *"Todas las anteriores"* o *"A y B son correctas"*, puedes desactivar el barajado añadiendo `shuffle: false` a esa pregunta.
-- **Progreso y LMS**: Incluye barra de progreso interactiva, corrección con retroalimentación inmediata, posibilidad de reintento y envío automático de notas al Libro de Calificaciones de Moodle (`cmi.core.score.raw` y `cmi.core.lesson_status`).
+
+### Características del Motor de Evaluación:
+- **Navegación Pregunta a Pregunta (1 en 1)**: El alumno visualiza una única pregunta por pantalla, pudiendo avanzar con `Siguiente`, retroceder con `Anterior` o saltar directamente mediante la barra de píldoras numeradas (`1..20`).
+- **Muestreo Aleatorio (ej. 20 de 50)**: En cada intento del alumno, el motor selecciona aleatoriamente 20 preguntas sin repetición del banco total.
+- **Sin Patrones Predecibles (Guardián Anti-Patrón)**: Las alternativas se barajan dinámicamente y el algoritmo previene rachas consecutivas (evita secuencias como A, A, A o ciclos A, B, C, D), logrando una distribución equilibrada y auténticamente aleatoria.
+- **Revisión y SCORM 1.2**: Tras corregir, las píldoras se tiñen de verde (acierto) o rojo (fallo), se muestra el porcentaje obtenido, se envía la nota al Libro de Calificaciones de Moodle/EducaMadrid (`cmi.core.score.raw`), y se permite revisar todas las explicaciones o reintentar con un nuevo test aleatorio.
 
 ---
 
