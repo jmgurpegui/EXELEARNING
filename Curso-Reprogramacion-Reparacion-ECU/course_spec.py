@@ -32,28 +32,65 @@ gen_common.PAGES = [
 
 def figura(img_file, caption, fig_num=None, prefix="../"):
     num_str = f'<span class="fig-num">Figura {fig_num}: </span>' if fig_num else ""
-    return f"""<div class="figura-taller" style="text-align:center;margin:1.4em 0;">
+    return f"""<div class="figura-taller" style="text-align:center;margin:1.6em 0;">
   <img src="{prefix}content/img/{img_file}" alt="{caption}" style="max-width:100%;height:auto;border-radius:8px;border:1px solid #cbd5e1;box-shadow:0 3px 10px rgba(0,0,0,0.06);">
-  <div class="fig-cap" style="font-size:0.88rem;color:#64748b;margin-top:0.5em;font-weight:500;">{num_str}{caption}</div>
+  <div class="fig-cap" style="font-size:0.88rem;color:#475569;margin-top:0.6em;font-weight:500;line-height:1.4;">{num_str}{caption}</div>
 </div>"""
 
-def video_embed(video_id, title, desc, badge="Vídeo Técnico", badge_class=""):
-    b_cls = f" {badge_class}" if badge_class else ""
-    return f"""<div class="video-card" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin:1.3em 0;background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-  <div class="video-card-header" style="background:#0f172a;color:#ffffff;padding:0.6em 1em;display:flex;justify-content:space-between;align-items:center;">
-    <h4 style="margin:0;color:#ffffff;font-size:0.98rem;">{title}</h4>
-    <span class="video-badge{b_cls}" style="background:#3b82f6;color:#ffffff;padding:0.2em 0.6em;border-radius:4px;font-size:0.75rem;font-weight:600;">{badge}</span>
+def video_embed(video_id, title, desc, author="Demostración Técnica", badge="Vídeo Técnico", badge_color="#2563eb"):
+    return f"""<div class="video-card" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin:1.6em 0;background:#ffffff;box-shadow:0 3px 10px rgba(0,0,0,0.05);">
+  <div class="video-card-header" style="background:#0f172a;color:#ffffff;padding:0.7em 1.1em;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h4 style="margin:0;color:#ffffff;font-size:0.98rem;font-weight:600;">{title}</h4>
+      <span style="font-size:0.78rem;color:#94a3b8;">Canal / Autor: {author}</span>
+    </div>
+    <span class="video-badge" style="background:{badge_color};color:#ffffff;padding:0.25em 0.7em;border-radius:4px;font-size:0.75rem;font-weight:700;">{badge}</span>
   </div>
   <div class="video-container" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;">
     <iframe src="https://www.youtube-nocookie.com/embed/{video_id}" title="{title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"></iframe>
   </div>
-  <div style="padding:0.9em 1em;">
-    <p class="video-desc" style="margin:0 0 0.6em;font-size:0.92rem;color:#334155;">{desc}</p>
-    <a class="video-link-ext" href="https://www.youtube.com/watch?v={video_id}" target="_blank" rel="noopener" style="font-size:0.85rem;font-weight:600;color:#0284c7;text-decoration:none;">🔗 Abrir vídeo en YouTube</a>
+  <div style="padding:0.9em 1.1em;">
+    <p class="video-desc" style="margin:0 0 0.7em;font-size:0.92rem;color:#334155;line-height:1.5;">{desc}</p>
+    <a class="video-link-ext" href="https://www.youtube.com/watch?v={video_id}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;font-weight:600;color:#0284c7;text-decoration:none;">
+      <span>▶️ Abrir y reproducir en YouTube (Ventana Completa)</span>
+    </a>
+  </div>
+</div>"""
+
+def autodata_card(code, title, desc, takeaways, duration, transcript_snippet):
+    takeaways_html = "".join(f"<li>{t}</li>" for t in takeaways)
+    return f"""<div class="autodata-card" style="border:1px solid #cbd5e1;border-radius:10px;overflow:hidden;margin:1.6em 0;background:#f8fafc;box-shadow:0 3px 10px rgba(0,0,0,0.04);">
+  <div style="background:#047857;color:#ffffff;padding:0.7em 1.1em;display:flex;justify-content:space-between;align-items:center;">
+    <h4 style="margin:0;color:#ffffff;font-size:0.98rem;display:flex;align-items:center;gap:8px;">
+      <span style="background:#065f46;padding:2px 8px;border-radius:4px;font-size:0.75rem;letter-spacing:0.5px;font-weight:700;">AUTODATA TRAINING</span>
+      {title}
+    </h4>
+    <span style="background:#10b981;color:#ffffff;padding:0.2em 0.7em;border-radius:4px;font-size:0.75rem;font-weight:700;">Módulo: {code}</span>
+  </div>
+  <div style="padding:1.1em 1.3em;">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0.9em;font-size:0.85rem;color:#334155;background:#e2e8f0;padding:8px 12px;border-radius:6px;">
+      <span><strong>📁 Archivo audiovisual:</strong> <code>{code} (540p).mp4</code></span>
+      <span><strong>⏱️ Duración:</strong> {duration}</span>
+      <span><strong>📂 Ubicación en taller / aula:</strong> <code>Autodata_Videos/módulos de control/</code></span>
+    </div>
+    <p style="margin:0 0 0.8em;font-size:0.92rem;color:#1e293b;line-height:1.5;">{desc}</p>
+    <div style="background:#ffffff;border:1px solid #e2e8f0;border-left:4px solid #047857;border-radius:6px;padding:0.8em 1em;margin:0.8em 0;">
+      <strong style="color:#047857;display:block;margin-bottom:0.4em;font-size:0.88rem;">🎯 Competencias y Puntos Clave de Aprendizaje:</strong>
+      <ul style="margin:0;padding-left:1.2em;font-size:0.88rem;color:#334155;line-height:1.6;">
+        {takeaways_html}
+      </ul>
+    </div>
+    <details style="margin-top:0.8em;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:0.6em 0.9em;">
+      <summary style="font-weight:600;color:#0f766e;cursor:pointer;font-size:0.85rem;">📄 Ver extracto de la locución técnica del módulo (transcripción oficial)</summary>
+      <div style="margin-top:0.6em;font-size:0.82rem;color:#475569;max-height:160px;overflow-y:auto;line-height:1.6;padding:8px;background:#ffffff;border-radius:4px;border:1px solid #e2e8f0;font-style:italic;">
+        "{transcript_snippet}"
+      </div>
+    </details>
   </div>
 </div>"""
 
 BODIES = {}
+
 
 # ===============================================================
 # PORTADA (index)
@@ -73,9 +110,9 @@ BODIES["index"] = r"""
     <span>OBD-II · Bench Mode · Boot · BDM</span>
     <span>Calibración Flash &amp; WinOLS</span>
     <span>Checksum &amp; Checksum Recalc</span>
-    <span>Soldadura SMD &amp; Rework</span>
+    <span>Diagnóstico SMD &amp; Soldadura</span>
     <span>Pass-Thru SAE J2534</span>
-    <span>SCORM 1.2</span>
+    <span>Clonación &amp; Desinmovilización</span>
   </div>
 </div>
 """ + box("Ficha Técnica y Competencias Profesionales", "objectives", r"""
@@ -141,177 +178,173 @@ BODIES["index"] = r"""
 # ===============================================================
 # TEMA 1: ARQUITECTURA INTERNA DEL HARDWARE DE LA ECU
 # ===============================================================
-BODIES["01-arquitectura-hardware-ecu"] = box("1. Anatomía y Componentes de la Placa PCB", "technology", r"""
+BODIES["01-arquitectura-hardware-ecu"] = box("1. Anatomía y Blindaje de la Placa PCB Automotriz", "technology", r"""
 <p>Una Unidad de Control Electrónico (UCE / ECU) del motor es un ordenador de grado automotriz diseñado para operar en condiciones extremas de vibración (hasta 30G), humedad y temperatura (-40 °C a +125 °C en vano motor). Su hardware interno se monta sobre una <strong>placa de circuito impreso multicapa (PCB de 4 a 8 capas)</strong> donde las pistas intermedias actúan como planos de masa (<em>ground planes</em>) y apantallamiento contra interferencias electromagnéticas (EMI).</p>
 
-""" + figura("diagrama_arquitectura_ecu.svg", "Arquitectura interna funcional de una centralita electrónica de motor", 1, prefix="../") + r"""
+""" + figura("aspecto_diferentes_uce.png", "Tipos y aspectos constructivos de UCEs en automoción: UCE de gestión motor Bosch con conector sellado, UCE antibloqueo ABS/ESP montada sobre bloque hidráulico, caja electrónica de transferencia y módulo de cuadro de instrumentos digital.", 1, prefix="../") + r"""
+
+<p>Para resistir la severa radiación electromagnética producida por el sistema de encendido, bobinas de inyección de alta tensión y motores eléctricos, las centralitas van alojadas en carcasas de fundición de aluminio inyectado dotadas de <strong>apantallamiento Jaula de Faraday</strong>:</p>
+
+""" + figura("jaula_faraday_blindaje_emc.png", "Carcasa metálica de aluminio inyectado con blindaje interno de Jaula de Faraday y junta hermética de estanqueidad para protección contra interferencias electromagnéticas (EMI).", 2, prefix="../") + r"""
+
+""" + figura("diagrama_arquitectura_ecu.svg", "Arquitectura interna funcional de una centralita electrónica de motor.", 3, prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
-    <h4>Microcontrolador (MCU)</h4>
-    <div class="sym">CPU</div>
-    <div class="ud">Núcleo de 32 bits (TriCore / MPC)</div>
-    <p>Ejecuta el sistema operativo en tiempo real (RTOS), gestiona interrupciones de cigüeñal e inyección, y procesa los algoritmos de control.</p>
+    <h4>Microcontrolador Central (MCU)</h4>
+    <div class="sym">MCU</div>
+    <div class="ud">TriCore / MPC5xx / Renesas</div>
+    <p>Núcleo de 32 bits a 150-300 MHz. Ejecuta el ciclo de cómputo en tiempo real calculando el avance de encendido, tiempo de inyección y presión de sobrealimentación a partir de las señales de entrada.</p>
   </div>
   <div class="mag-card">
-    <h4>Memoria Flash</h4>
-    <div class="sym">ROM</div>
-    <div class="ud">512 KB a 8 MB (Interna / Externa)</div>
-    <p>Almacena el código de firmware (programa principal) y todas las tablas y mapas de calibración del motor. Es la zona modificada en reprogramación.</p>
+    <h4>Gestión de Alimentación (PMIC)</h4>
+    <div class="sym">PMIC</div>
+    <div class="ud">Reguladores LDO / Step-Down</div>
+    <p>Convierte los 12V ruidosos del alternador (con picos de hasta 40V) en tensiones reguladas estables: 5,0V para sensores analógicos, 3,3V para el microcontrolador y 1,2V para el núcleo de cómputo.</p>
   </div>
   <div class="mag-card">
-    <h4>Memoria EEPROM</h4>
-    <div class="sym">SPI</div>
-    <div class="ud">2 KB a 64 KB (Serie 95xxx / 24Cxx)</div>
-    <p>Memoria no volátil reescribible que custodia los datos de inmovilizador (IMMO PIN), número de bastidor (VIN), odómetro y codificación de inyectores.</p>
+    <h4>Etapas Finales de Potencia</h4>
+    <div class="sym">DRIVERS</div>
+    <div class="ud">MOSFET / Smart Switches</div>
+    <p>Transistores de efecto de campo en configuración High-Side (conmutación a positivo) o Low-Side (conmutación a masa) para activar inyectores, bobinas de encendido, electroválvulas y relés.</p>
   </div>
   <div class="mag-card">
-    <h4>Regulador / PMIC</h4>
-    <div class="sym">5.0V</div>
-    <div class="ud">LDO / Step-Down conmutado</div>
-    <p>Convierte los 12V de batería en tensiones limpias y ultraestables: 5,00 V para sensores externos, 3,3 V para lógica y 1,2 V - 1,5 V para el núcleo del MCU.</p>
+    <h4>Transceptores de Bus</h4>
+    <div class="sym">BUS IC</div>
+    <div class="ud">CAN / LIN / FlexRay / SENT</div>
+    <p>Chips de interfaz de línea física (ej. TJA1050, PCA82C250) que convierten los niveles lógicos del procesador a las tensiones diferenciales requeridas por las redes del vehículo (CAN_H / CAN_L).</p>
   </div>
 </div>
+""", prefix="../") + box("2. Composición Interna y Ciclo de Ejecución de la UCE", "calculate", r"""
+<p>El funcionamiento de una centralita responde a un ciclo continuo de adquisición, procesamiento y actuación en tiempo real:</p>
 
-<h4>Familias de Microcontroladores en Automoción</h4>
+""" + figura("figura_composicion_uce.png", "Composición funcional del sistema microprocesador de la UCE: acondicionamiento de entradas analógicas/digitales con convertidor A/D, microprocesador (Unidad de Control y Unidad Aritmético-Lógica UAL), buses de control/direcciones/datos, memorias RAM/ROM/EEPROM, convertidor D/A y etapas finales de potencia hacia los actuadores.", 4, prefix="../") + r"""
+
+<h4>El Reloj Maestro y la Sincronización Temporal</h4>
+<p>Todos los cálculos del microprocesador están sincronizados por una señal de reloj de onda cuadrada generada por un <strong>oscilador de cristal de cuarzo piezoeléctrico</strong>. La frecuencia de este cristal determina la velocidad de cálculo del procesador:</p>
+
+""" + figura("foto_cristal_cuarzo_reloj.png", "Circuito oscilador de reloj maestro gobernado por cristal de cuarzo piezoeléctrico de 21.000 MHz (OSC1) con condensadores y resistencias de ajuste de compensación de fase.", 5, prefix="../") + r"""
+
+<div class="callout aviso">
+  <span class="cap">Verificación con Osciloscopio en Taller</span>
+  <p>Cuando una centralita no enciende ni responde a la diagnosis en banco, uno de los primeros pasos obligatorios consiste en medir la señal del cristal oscilador con osciloscopio y sonda 10X. Si no existe una onda senoidal perfecta de la frecuencia nominal (ej. 21 MHz o 40 MHz), el procesador está en estado de reset continuo y nunca arrancará.</p>
+</div>
+
+<h4>Arquitecturas de Alta Fiabilidad: Redundancia y Multiprocesador</h4>
+<p>En aplicaciones diésel de alta exigencia e inyección directa, los fabricantes han recurrido a arquitecturas multiprocesador donde varios microcontroladores cooperan en la misma placa, supervisándose mutuamente a través del bus interno:</p>
+
+""" + figura("placa_uce_opel_triple_micro.png", "Arquitectura de alta fiabilidad en placa PCB: UCE diésel Opel Omega con disposición redundante de triple microordenador y osciladores de cuarzo independientes para control de inyección y supervisión de seguridad.", 6, prefix="../") + r"""
+""", prefix="../") + box("3. Mapa de Memoria: RAM, ROM, Flash y EEPROM", "roadmap", r"""
+<p>En el hardware de una centralita conviven cuatro tecnologías de memoria distintas, cada una con una misión específica:</p>
+
+""" + figura("estructura_matriz_ram.png", "Estructura interna de la matriz de memoria de lectura/escritura RAM: celdas dinámicas formadas por transistor MOS de conmutación y condensador de almacenamiento de carga por celda binaria.", 7, prefix="../") + r"""
+
+""" + figura("estructura_matriz_rom.png", "Estructura interna de una matriz de memoria de solo lectura ROM: matriz cruzada de líneas de dirección y columnas de datos interconectadas por diodos semiconductores permanentes.", 8, prefix="../") + r"""
+
 <table class="tabla-curso">
   <thead>
     <tr>
-      <th>Familia MCU</th>
-      <th>Fabricante</th>
-      <th>Centralitas Típicas</th>
-      <th>Características de Programación</th>
+      <th style="width:18%;">Tipo de Memoria</th>
+      <th style="width:20%;">Volatilidad y Acceso</th>
+      <th style="width:32%;">Contenido Almacenado</th>
+      <th style="width:30%;">Referencias Típicas en Taller</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong>TriCore (TC17xx, AURIX TC2xx/3xx)</strong></td>
-      <td>Infineon</td>
-      <td>Bosch EDC17, MED17, MD1, MG1, Continental SID</td>
-      <td>Arquitectura RISC 32 bits. Incorpora módulo de seguridad por hardware (HSM) y requiere lectura Bench con pines GPT o Bootloader.</td>
+      <td><strong>RAM (SRAM)</strong></td>
+      <td>Volátil (pierde datos al quitar alimentación KL30). Lectura/escritura ultrarrápida.</td>
+      <td>Variables dinámicas de cálculo: régimen actual, temperatura de motor, corrección de riqueza Lambda a corto plazo y buffers de diagnosis.</td>
+      <td>Integrada en el silicio del MCU (64 KB a 512 KB).</td>
     </tr>
     <tr>
-      <td><strong>PowerPC (MPC555, MPC5566, MPC56xx)</strong></td>
-      <td>NXP / Freescale</td>
-      <td>Bosch EDC16, Delphi DCM3.x, Magneti Marelli MJD</td>
-      <td>Puerto BDM (Background Debug Mode) dedicado con pads circulares o conector para agujas en bastidor.</td>
+      <td><strong>ROM / OTP</strong></td>
+      <td>No volátil. Grabada en fábrica por máscara de silicio o fusible térmico irreversible (OTP).</td>
+      <td>Código de arranque primario (<em>Bootloader de nivel 0</em>) y rutinas de inicialización de los buses de hardware. No se puede borrar ni reescribir.</td>
+      <td>Bloque interno protegido de fábrica en MCU TriCore / ST10.</td>
     </tr>
     <tr>
-      <td><strong>SuperH (SH7055, SH7058, RH850)</strong></td>
-      <td>Renesas</td>
-      <td>Denso (Toyota, Nissan, Mazda), Hitachi, Transtron</td>
-      <td>Utilizado masivamente en marcas asiáticas. Conexión JTAG / AUD o lectura por línea serie K-Line/CAN.</td>
+      <td><strong>Flash (NOR)</strong></td>
+      <td>No volátil. Re-escribible por bloques (sectores) eléctricamente mediante pulsos de programación.</td>
+      <td><strong>Firmware del motor y cartografía completa:</strong> curvas de inyección, avance, presión de turbo, limitadores de par y tablas lambda. Es el objetivo principal de la reprogramación.</td>
+      <td>AM29F400BT (512 KB), 28F200 (256 KB), Flash interna TriCore TC1796 (2 MB), TC1797 (4 MB), TC297 (8 MB).</td>
     </tr>
     <tr>
-      <td><strong>C167 / ST10</strong></td>
-      <td>Infineon / ST</td>
-      <td>Bosch EDC15, ME7.x, Siemens MS42/MS43</td>
-      <td>Microcontrolador de 16 bits de generaciones anteriores. Memoria Flash externa encapsulada en chip PSOP44 (29F400/29F800).</td>
+      <td><strong>EEPROM (Serie)</strong></td>
+      <td>No volátil. Lectura y escritura byte a byte por bus SPI o I2C. Conserva datos durante más de 20 años sin batería.</td>
+      <td><strong>Datos de personalización del vehículo:</strong> código secreto del inmovilizador (PIN), número de chasis (VIN), kilometraje, codificación IMA de inyectores y códigos de avería (DTCs).</td>
+      <td>Chips SOIC-8 de 8 patillas: familias SPI 95080, 95160, 95320, 95640, 95128 y familias I2C 24C02, 24C04, 24C16.</td>
     </tr>
   </tbody>
 </table>
-""", prefix="../") + box("2. Etapas de Potencia, Drivers Inteligentes y Protección", "calculate", r"""
-<p>El microcontrolador trabaja con niveles lógicos de baja tensión (3,3 V o 5 V) y corrientes de apenas unos miliamperios. Para gobernar elementos que demandan decenas de amperios (inyectores piezoeléctricos o inductivos, bobinas de encendido, mariposa motorizada, calentadores diésel), la centralita incorpora <strong>etapas de potencia especializadas</strong>:</p>
-
-<div class="callout aviso">
-  <span class="cap">Diodos Flyback (Libre Circulación) y Picos Inductivos</span>
-  <p>Al cortar súbitamente la corriente en una carga fuertemente inductiva (como un inyector o una electroválvula PWM), la ley de Faraday-Lenz genera una fuerza contraelectromotriz (f.e.m.) inversa que puede alcanzar picos de entre <strong>80 V y más de 400 V</strong>:
-  \[ V_{ind} = -L \cdot \frac{di}{dt} \]
-  Si el diodo supresor de libre circulación interno o la red de protección zener/TVS se cortocircuita o se abre, el transistor MOSFET asociado sufrirá una perforación por sobretensión en cuestión de milisegundos.</p>
-</div>
-
-<ol>
-  <li><strong>Drivers Inteligentes (Smart Power ICs):</strong> Circuitos integrados que integran la lógica de disparo, sensores de corriente internos (<em>current shunt sensing</em>) y protección térmica contra cortocircuito a masa o a positivo. Comunican al microcontrolador cualquier fallo de línea mediante bus serie SPI.</li>
-  <li><strong>Transistores MOSFET (Canal N):</strong> Utilizados preferentemente en conmutación por masa de actuadores PWM (válvulas de turbo N75, bombas eléctricas, válvulas EGR).</li>
-  <li><strong>Transistores IGBT (Insulated Gate Bipolar Transistor):</strong> Empleados en las etapas de encendido de motores de gasolina para soportar la elevada tensión inducida en el primario de las bobinas (hasta 400 V de corte).</li>
-  <li><strong>Convertidor DC-DC Elevador (Boost Converter):</strong> En motores Diésel Common Rail modernos e inyección directa de gasolina (GDI), la centralita incorpora bobinas toroidales y condensadores electrolíticos de alta capacidad para elevar los 12 V de la batería a tensiones de entre <strong>70 V y 150 V</strong>, necesarias para abrir con rapidez los inyectores piezoeléctricos.</li>
-</ol>
 """, prefix="../") + nav_block("01-arquitectura-hardware-ecu")
 
 
 # ===============================================================
-# TEMA 2: PROTOCOLOS Y MÉTODOS DE LECTURA Y ESCRITURA (FLASHEO)
+# TEMA 2: PROTOCOLOS Y MÉTODOS DE LECTURA Y FLASHEO
 # ===============================================================
-BODIES["02-metodos-lectura-escritura"] = box("1. Comparativa de los 4 Métodos de Acceso a la Memoria", "calculate", r"""
-<p>El acceso a la memoria de una centralita para realizar operaciones de clonación, lectura de seguridad o reprogramación de mapas se efectúa mediante 4 procedimientos técnicos diferenciados, con niveles crecientes de profundidad y complejidad mecánica:</p>
+BODIES["02-metodos-lectura-escritura"] = box("1. Panorama General de Métodos de Acceso a la Memoria", "calculate", r"""
+<p>Para leer el archivo original de una ECU o escribir una nueva calibración modificada, el electromecánico dispone de <strong>cuatro métodos de trabajo</strong> con niveles crecientes de invasividad y seguridad:</p>
 
-""" + figura("diagrama_metodos_lectura.svg", "Matriz comparativa de los métodos de conexión para lectura y escritura de ECUs", 2, prefix="../") + r"""
+""" + figura("diagrama_metodos_lectura.svg", "Árbol de decisión para seleccionar el método de lectura y escritura según el nivel de acceso y protección antituning.", 9, prefix="../") + r"""
 
-<table class="tabla-curso">
-  <thead>
-    <tr>
-      <th>Método</th>
-      <th>Puntos de Conexión</th>
-      <th>Apertura de ECU</th>
-      <th>Zonas Leídas</th>
-      <th>Nivel de Seguridad</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>1. OBD-II (DLC)</strong></td>
-      <td>Toma de 16 pines del habitáculo (CAN pines 6/14; K-Line pin 7).</td>
-      <td><strong>NO</strong></td>
-      <td>Solo zona de calibración/mapas (a menudo lectura virtual VR en servidor).</td>
-      <td>Medio. Requiere estabilizador estricto. Riesgo de corte por pasarela Gateway o desconexión.</td>
-    </tr>
-    <tr>
-      <td><strong>2. Bench Mode</strong></td>
-      <td>Pines exteriores del conector de la ECU (VCC, GND, CAN, K-Line, GPT1/GPT2).</td>
-      <td><strong>NO</strong></td>
-      <td>Flash interna, Flash externa y EEPROM completa (Micro TriCore / MPC).</td>
-      <td><strong>Máximo</strong>. Muy seguro; permite copia 100% y clonación completa sin desprecintar la placa.</td>
-    </tr>
-    <tr>
-      <td><strong>3. Boot Mode</strong></td>
-      <td>Conector exterior + Resistencia de arranque (1 kΩ) a masa en pad de la PCB.</td>
-      <td><strong>SÍ</strong></td>
-      <td>Acceso total a memoria Flash y EEPROM forzando el modo de arranque de fábrica.</td>
-      <td>Alto en electrónica; medio en mecánica (precaución al despegar silicona de la carcasa).</td>
-    </tr>
-    <tr>
-      <td><strong>4. BDM / JTAG</strong></td>
-      <td>Bastidor de agujas retráctiles (pogo pins) sobre pads de depuración de la PCB.</td>
-      <td><strong>SÍ</strong></td>
-      <td>Lectura física 1:1 directa al bus del microcontrolador (MPC5xx, Nexus, JTAG).</td>
-      <td>Máximo para rescate. Método definitivo para desbrickear centralitas corruptas.</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="callout truco">
-  <span class="cap">¿Qué son los Pines GPT en Bench Mode?</span>
-  <p>En centralitas modernas con microcontroladores Infineon TriCore (Bosch EDC17 y MED17), los fabricantes introdujeron protecciones antituning avanzadas (TPROT). Para leerlas en banco sin abrir la carcasa, herramientas como Autotuner, K-Tag o Flex utilizan las líneas <strong>GPT (General Purpose Timer)</strong>. El programador inyecta una secuencia periódica de pulsos de frecuencia sincronizada por los pines GPT1 y GPT2 que desbloquea el microcontrolador mediante una contraseña de hardware (SOPT Password) almacenada en la EEPROM.</p>
-</div>
-""", prefix="../") + box("2. Equipamiento Profesional de Taller: Master vs Slave", "technology", r"""
-<p>Al seleccionar equipamiento profesional de flasheo para el taller, el técnico debe comprender el modelo de licenciamiento de los principales fabricantes de herramientas:</p>
+""" + figura("herramientas_lectura_kess3_flex.png", "Equipamiento profesional de lectura y programación automotriz: Alientech KESS3, Magicmotorsport FLEX, Autotuner, caja Bench Box con adaptadores GPT/Tricore, New Genius y sondas de agujas pogo para marco de posicionamiento BDM.", 10, prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
-    <h4>Herramienta MASTER</h4>
-    <div class="sym">.BIN</div>
-    <div class="ud">Archivos abiertos sin encriptar</div>
-    <p>Lee y escribe archivos en formato binario puro (<code>.bin</code> o <code>.ori</code>). El técnico puede abrir el archivo directamente en WinOLS, modificarlo o enviarlo a cualquier calibrador independiente.</p>
+    <h4>1. Puerto OBD-II / EOBD</h4>
+    <div class="sym">OBD</div>
+    <div class="ud">Sin desmontar la ECU</div>
+    <p>Conexión directa a la toma de 16 pines del vehículo. Rapidez máxima (5-15 min). Solo lee la zona de calibración de mapas; no extrae la EEPROM completa.</p>
   </div>
   <div class="mag-card">
-    <h4>Herramienta SLAVE</h4>
-    <div class="sym">.ENC</div>
-    <div class="ud">Archivos encriptados vinculados a un Master</div>
-    <p>Coste de hardware más económico. Los archivos leídos quedan encriptados y solo pueden ser descifrados y modificados por la herramienta Master a la que está asociada la cuenta.</p>
+    <h4>2. Modo Banco (Bench Mode)</h4>
+    <div class="sym">BENCH</div>
+    <div class="ud">ECU extraída, sin abrir carcasa</div>
+    <p>Conexión al conector exterior mediante cableado pinout y señales GPT. Permite clonación completa (Full Flash + EEPROM) sin peligro de rotura mecánica.</p>
+  </div>
+  <div class="mag-card">
+    <h4>3. Bootloader / BDM</h4>
+    <div class="sym">BOOT</div>
+    <div class="ud">Carcasa abierta, contacto en PCB</div>
+    <p>Conexión de sondas o resistencias a pines de arranque del procesador (TriCore Boot) o conector de depuración de 10-14 pines (BDM MPC5xx). Permite revivir centralitas bloqueadas.</p>
+  </div>
+  <div class="mag-card">
+    <h4>4. Programador Directo</h4>
+    <div class="sym">CHIP</div>
+    <div class="ud">Lectura con pinza o desoldado</div>
+    <p>Lectura directa de la EEPROM SOIC-8 o memoria Flash en programador universal (Dataman 48Pro2). Método definitivo para extracción de PIN o Immo-Off cuando el procesador está dañado.</p>
   </div>
 </div>
+""", prefix="../") + box("2. Lectura y Diagnóstico por Puerto Serie EOBD / OBD-II", "technology", r"""
+<p>El estándar OBD-II utiliza protocolos de comunicación serie para transferir datos entre la interfaz de diagnosis y la centralita. Antes de intentar cualquier lectura de mapas, es imprescindible realizar una sesión de identificación del software:</p>
 
-<h4>Herramientas de Referencia en el Sector</h4>
-<ul>
-  <li><strong>Autotuner:</strong> Herramienta rápida de referencia para Bench y OBD-II, sin cuotas anuales de suscripción y con protocolos automáticos de corrección de Checksum.</li>
-  <li><strong>Flex (Magicmotorsport):</strong> Plataforma modular avanzada con módulos de OBD, Bench, Boot y BDM para motor y cajas de cambio automáticas (TCU).</li>
-  <li><strong>Kess3 (Alientech):</strong> Sucesor unificado de Kess v2 y K-Tag, que integra flasheo por toma de diagnosis y operaciones directas en banco con bastidor.</li>
-  <li><strong>Dimsport New Genius &amp; Trasdata:</strong> Equipos de gran robustez industrial con consolas táctiles autónomas para evitar fallos de portátiles.</li>
+""" + figura("identificacion_ecu_diagnosis_edc15.png", "Identificación técnica de UCE por toma OBD-II: lectura de referencia de hardware/software Bosch 038 906 012 EM, familia EDC 15V y codificación de variantes en Seat Ibiza 1.9 SDI.", 11, prefix="../") + r"""
+
+<p>Una vez identificada la referencia exacta del hardware y la versión del software, el equipo de flasheo inicia la sesión de transferencia de datos descargando la memoria Flash:</p>
+
+""" + figura("lectura_obd2_eobd1250.png", "Secuencia de comunicación serie para identificación de software y lectura completa de volcado Flash por toma de diagnosis EOBD2 1250 de FG Technology.", 12, prefix="../") + r"""
+
+<div class="callout alerta">
+  <span class="cap">Regla de Oro en Lectura y Flasheo por OBD-II</span>
+  <p>Durante la lectura o escritura por OBD-II, el electroventilador del motor puede activarse a máxima velocidad por protocolo de seguridad de la ECU, provocando una caída drástica de tensión. Es <strong>estrictamente obligatorio conectar un estabilizador de taller de 70 A a 100 A</strong> que mantenga la batería entre 13,8 V y 14,4 V constantes durante todo el proceso. Una caída por debajo de 12,0 V durante la fase de borrado del sector dejará la centralita completamente bloqueada (<em>bricked</em>).</p>
+</div>
+""", prefix="../") + box("3. Bench Mode (GPT), Bootloader Tricore y Programadores Universales", "experiment", r"""
+<p>Cuando una centralita incorpora protección <strong>antituning (TPROT)</strong> a nivel de procesador, el puerto OBD bloquea las solicitudes de flasheo no autorizadas. En este escenario, el método preferente en el taller es el <strong>Modo Banco (Bench Mode)</strong> con sincronización por pines GPT (<em>General Purpose Timer</em>):</p>
+
+<ul class="ra-list">
+  <li><strong>Sincronización GPT:</strong> La herramienta emite pulsos de frecuencia calibrada por dos pines de sensores del conector exterior. El microcontrolador Infineon TriCore valida estos pulsos y conmuta a modo de servicio de fábrica sin necesidad de abrir la carcasa de aluminio sellada.</li>
+  <li><strong>Extracción Full Backup:</strong> Bench Mode permite leer de forma íntegra la memoria Flash interna (Micro Flash), la Flash externa (si existe) y la memoria EEPROM física o emulada, permitiendo la clonación perfecta 1:1 de la ECU.</li>
 </ul>
 
-<div class="callout peligro">
-  <span class="cap">Regla de Oro en el Taller: El "Full Backup" Previo Obligatorio</span>
-  <p><strong>NUNCA</strong> inicies una reprogramación o modificación de mapas sin haber realizado previamente una copia de seguridad íntegra de la memoria (<em>Full Backup</em> de Flash y EEPROM). Si la comunicación se interrumpe durante el borrado del bloque OBD, disponer de la lectura en banco o BDM permitirá restaurar la centralita a su estado operativo original en menos de 10 minutos.</p>
+<h4>Programación Directa de Memorias con Estación Dataman 48Pro2</h4>
+<p>En casos de recuperación de módulos dañados por agua, sobretensión o clonaciones complejas donde el procesador central ha quedado inoperativo, la lectura física del chip de memoria EEPROM o Flash es el único camino viable:</p>
+
+""" + figura("lectura_eeprom_clip_dataman48pro2.png", "Estaciones de lectura y programación de memorias: (a) Pinza SOIC-8 clip pogo de lectura rápida sobre placa sin desoldar, (b) Zócalo de inserción nula (ZIF) de programador BeeProg2, (c) Estación universal de programación Dataman 48Pro2 (www.dataman.com) con zócalo ZIF de 48 pines y conectores ISP para lectura de EEPROM y Flash de automoción.", 13, prefix="../") + r"""
+
+<div class="callout nota">
+  <span class="cap">Ventajas Técnicas del Programador Dataman 48Pro2 (www.dataman.com)</span>
+  <p>La estación universal <strong>Dataman 48Pro2</strong> incorpora 48 terminales independientes universales (<em>pin-drivers</em>) con capacidad de comprobación automática de continuidad de patillas (<em>pin continuity check</em>) antes de iniciar cualquier operación. Esto evita corrupciones accidentales si una de las patillas del chip SOIC-8 presenta restos de laca o mal contacto. Además, admite programación en circuito (ISP) para leer la memoria directamente sobre la placa sin desoldar.</p>
 </div>
 """, prefix="../") + nav_block("02-metodos-lectura-escritura")
 
@@ -319,77 +352,92 @@ BODIES["02-metodos-lectura-escritura"] = box("1. Comparativa de los 4 Métodos d
 # ===============================================================
 # TEMA 3: REPROGRAMACIÓN DE MAPAS Y CHECKSUM
 # ===============================================================
-BODIES["03-modificacion-mapas-checksum"] = box("1. Estructura de los Mapas en la Memoria Flash", "roadmap", r"""
-<p>La memoria Flash contiene el código ensamblador ejecutable del sistema operativo y miles de arrays de datos numéricos denominados <strong>mapas o matrices de calibración</strong>. Estos mapas pueden ser bidimensionales (curvas 2D) o tridimensionales (superficies 3D):</p>
+BODIES["03-modificacion-mapas-checksum"] = box("1. Cartografía Motor: Organización y Localización en Memoria Flash", "roadmap", r"""
+<p>El archivo binario (volcado crudo .bin u .ori) extraído de la memoria Flash contiene dos partes fundamentales: el <strong>código ejecutable del sistema operativo del motor</strong> y el <strong>bloque de calibración (datos de mapas)</strong>. Los mapas son matrices matemáticas de consulta (<em>lookup tables</em>) que relacionan las variables de entrada con las decisiones de control del actuador:</p>
 
-""" + figura("diagrama_mapa_3d_inyeccion.svg", "Superficie 3D de un mapa motor y relación de ejes en WinOLS", 3, prefix="../") + r"""
+""" + figura("diagrama_mapa_3d_inyeccion.svg", "Estructura matemática tridimensional de un mapa de inyección en función del régimen de giro (RPM) y la carga del motor.", 14, prefix="../") + r"""
 
-<h4>Los 6 Mapas Fundamentales en Motores Diésel Common Rail</h4>
-<ol>
-  <li><strong>Mapa de Pedal (Driver Wish):</strong> Traduce el porcentaje de pisada del pedal del acelerador (%) y el régimen de giro (RPM) en una demanda de par motor (\(\text{Nm}\)) o caudal de inyección (\(\text{mg/ciclo}\)).</li>
-  <li><strong>Limitador de Par (Torque Limiter):</strong> Curva de protección mecánica que restringe el par máximo admisible según el régimen (RPM) y la presión atmosférica, protegiendo el embrague, la caja de cambios y la biela.</li>
-  <li><strong>Mapa de Humos / Lambda (Smoke Limiter):</strong> Define la relación estequiométrica mínima admisible de aire/combustible en función de la masa de aire medida por el caudalímetro (MAF) o la presión de admisión (MAP). Si se supera este límite, se produce emisión visible de partículas (humo negro).</li>
-  <li><strong>Mapa de Presión de Raíl:</strong> Determina la presión del acumulador Common Rail (de 250 bar a ralentí hasta más de 2000 bar en plena carga) según las RPM y la cantidad de combustible inyectada.</li>
-  <li><strong>Mapas de Avance (SOI - Start of Injection) y Duración:</strong>
-    \[ \text{Ángulo SOI (}^\circ\text{ cigüeñal)} \quad \text{y} \quad \text{Tiempo de apertura (}\mu\text{s)} \]
-    Garantizan que la combustión comience en el instante óptimo respecto al punto muerto superior (PMS).</li>
-  <li><strong>Mapa de Sobrealimentación (Turbo Boost Map) y N75:</strong> Presión absoluta demandada al turbocompresor (en milibares, ej. 2400 mbar) y mapa del ciclo de trabajo PWM (Duty Cycle %) de la electroválvula de control de la geometría variable (VNT).</li>
-</ol>
-""", prefix="../") + box("2. Software de Edición y el Algoritmo del Checksum", "calculate", r"""
-<p>Para localizar y modificar estos mapas en un archivo binario de varios megabytes se utilizan suites profesionales de calibración:</p>
+<p>Para localizar, visualizar y modificar estos mapas en un archivo binario, el software estándar por excelencia en la industria automotriz mundial es <strong>EVC WinOLS</strong> (<a href="https://www.evc.de/" target="_blank" rel="noopener">www.evc.de</a>):</p>
 
-<ul>
-  <li><strong>WinOLS (EVC Electronic):</strong> El estándar de la industria. Permite visualizar el binario en formato hexadecimal (2D, 3D y texto), buscar mapas potenciales por heurística y cargar archivos <strong>DAMOS / A2L</strong> (map packs oficiales con la definición exacta de variables, factores de escala y offsets de ingeniería).</li>
-  <li><strong>ECM Titanium (Alientech):</strong> Software estructurado orientado a taller rápido que utiliza drivers predefinidos para identificar automáticamente los mapas clave sin necesidad de buscar ejes manualmente.</li>
-</ul>
+""" + figura("winols_visualizacion_hex_2d_3d.png", "Entorno de ingeniería de calibración EVC WinOLS (www.evc.de): visualización sincronizada en volcado hexadecimal/decimal crudo, modo gráfico lineal 2D y representación de superficie tridimensional 3D con reconocimiento de ejes.", 15, prefix="../") + r"""
 
-<div class="callout peligro">
-  <span class="cap">El Checksum: Qué Es y Por Qué Bloquea la ECU</span>
-  <p>El <strong>Checksum (Suma de Verificación)</strong> es un valor numérico o firma criptográfica (algoritmos de redundancia cíclica CRC32, sumas de 16/32 bits o firmas RSA) calculado sobre bloques continuos de la memoria Flash.</p>
-  <p>Al arrancar el vehículo, el microcontrolador ejecuta una rutina de autochequeo en la que recalcula el Checksum de todos los bloques de memoria y lo compara con el valor de referencia grabado en la cabecera. Si un solo byte ha sido modificado sin recalcular el Checksum:
-  \[ \text{Checksum Calculado} \neq \text{Checksum Almacenado} \implies \text{BLOQUEO DE ARRANQUE} \]
-  El microcontrolador aborta la secuencia de inyección, enciende el testigo de avería motor y el vehículo queda completamente inmovilizado. Afortunadamente, las herramientas de flasheo modernas y WinOLS recalculan e insertan automáticamente el Checksum correcto durante el guardado y escritura del archivo.</p>
+<h4>El Mosaico de Mapas Principales en una Centralita Diésel / Gasolina</h4>
+<p>Una calibración profesional requiere entender la interdependencia entre los distintos mapas de gestión de par y alimentación:</p>
+
+""" + figura("coleccion_mapas_3d_winols.png", "Mosaico de mapas tridimensionales característicos en EVC WinOLS: mapa de límite de par, inyección básica de arranque, presión de raíl Common Rail, avance de inyección/encendido, presión absoluta de turbo y mapa de humos/factor lambda.", 16, prefix="../") + r"""
+
+<div class="mag-grid">
+  <div class="mag-card">
+    <h4>Deseo del Conductor (Driver Wish)</h4>
+    <div class="sym">DW</div>
+    <div class="ud">Ejes: RPM vs Posición Pedal (%)</div>
+    <p>Convierte el recorrido físico del pedal del acelerador en una demanda de par motor expresada en Newton-metro (Nm) o caudal de combustible (mg/carrera).</p>
+  </div>
+  <div class="mag-card">
+    <h4>Limitador de Par (Torque Limiter)</h4>
+    <div class="sym">TL</div>
+    <div class="ud">Ejes: RPM vs Presión Atmosférica</div>
+    <p>Curva de seguridad mecánica y térmica que limita el par máximo del motor para proteger la caja de cambios, embrague, bielas y pistones.</p>
+  </div>
+  <div class="mag-card">
+    <h4>Mapa de Humos / Lambda</h4>
+    <div class="sym">SMOKE</div>
+    <div class="ud">Ejes: RPM vs Masa de Aire (MAF mg/h)</div>
+    <p>Limita el combustible máximo inyectable en función del aire admitido por el motor para evitar emisiones de partículas visibles y exceso de hollín.</p>
+  </div>
+  <div class="mag-card">
+    <h4>Presión de Sobrealimentación (Turbo)</h4>
+    <div class="sym">BOOST</div>
+    <div class="ud">Ejes: RPM vs Caudal Combustible (mg)</div>
+    <p>Fija la presión absoluta de soplado del turbocompresor en hectopascales (hPa) y regula la válvula de geometría variable (VNT / wastegate).</p>
+  </div>
 </div>
 
-<h4>Niveles Típicos de Modificación en Taller</h4>
-<table class="tabla-curso">
-  <thead>
-    <tr>
-      <th>Nivel</th>
-      <th>Objetivo Técnico</th>
-      <th>Intervención Mecánica Requerida</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Stage 1</strong></td>
-      <td>Optimización de par y potencia (+15% a +30%) dentro de las tolerancias térmicas y mecánicas holgadas del fabricante.</td>
-      <td><strong>Vehículo 100% de serie</strong>. Mantenimiento al día (filtros, aceite de especificación y distribución).</td>
-    </tr>
-    <tr>
-      <td><strong>Stage 2</strong></td>
-      <td>Incremento superior aprovechando mejoras en el flujo de gases y refrigeración.</td>
-      <td>Exige modificaciones físicas: <em>intercooler</em> de mayor volumen, <em>downpipe</em> de baja contrapresión y admisión optimizada.</td>
-    </tr>
-    <tr>
-      <td><strong>Clonación Integral</strong></td>
-      <td>Traspasar el 100% de datos (Flash + EEPROM con inmovilizador y VIN) de una ECU averiada a una unidad donante idéntica.</td>
-      <td>Ninguna en motor. En banco: volcado bit a bit para que la nueva centralita arranque a la primera (Plug &amp; Play).</td>
-    </tr>
-    <tr>
-      <td><strong>Virginización</strong></td>
-      <td>Resetear el área de inmovilizador de la EEPROM a valores de fábrica ("virgen").</td>
-      <td>Permite que la ECU se autoempareje con el cuadro de instrumentos o BSI en el primer ciclo de contacto de llave.</td>
-    </tr>
-  </tbody>
-</table>
+<h4>Detalle de Curva 2D: Limitador de Par Motor</h4>
+<p>La vista bidimensional lineal en WinOLS permite comprobar con precisión micrométrica la forma de la curva y verificar que no existan discontinuidades abruptas que generen tirones o sobrepresiones destructivas:</p>
+
+""" + figura("winols_curva_2d_limite_par.png", "Curva analítica 2D en WinOLS del mapa limitador de par motor en función del régimen de giro (RPM) y límite térmico de caudal.", 17, prefix="../") + r"""
+""", prefix="../") + box("2. El Algoritmo Checksum (Suma de Verificación) y Bloqueo Antituning", "calculate", r"""
+<p>El <strong>Checksum</strong> es un valor matemático de control criptográfico calculado a partir de la suma ponderada de todos los bytes contenidos en los bloques de memoria Flash. Su finalidad principal en la automoción es garantizar la <strong>integridad de los datos</strong> contra ruidos electromagnéticos o corrupciones en memoria.</p>
+
+<div class="callout alerta">
+  <span class="cap">Peligro Crítico: Checksum Incorrecto = Bloqueo Irreversible</span>
+  <p>Cuando se modifica aunque sea un solo bit en un mapa de potencia (ej. aumentar el tiempo de inyección en un 5%), el Checksum matemático de la Flash cambia por completo. Si se graba el archivo modificado en la centralita sin haber recalculado previamente el Checksum, la rutina de arranque del microcontrolador detectará una discrepancia matemática en la verificación inicial (KL15) y <strong>bloqueará el procesador impidiendo el arranque del vehículo</strong>.</p>
+</div>
+
+<h4>Mecanismo de Recálculo Automático</h4>
+<p>En la práctica profesional moderna, el cálculo del Checksum nunca se realiza de forma manual debido a su extrema complejidad (algoritmos RSA, polinomios CRC32 y firmas digitales en familias Bosch EDC17/MED17 y MD1/MG1). Se emplean dos mecanismos:</p>
+<ul class="ra-list">
+  <li><strong>Plugins de Checksum en WinOLS:</strong> Módulos software desarrollados por EVC Electronic que identifican automáticamente la familia de la ECU al guardar el archivo y actualizan los bloques de verificación correspondientes.</li>
+  <li><strong>Recálculo en Flasheo por Hardware:</strong> Interfaces profesionales como KESS3 o FLEX analizan el archivo en tiempo real durante la fase previa de flasheo y corrigen el Checksum automáticamente sobre la marcha.</li>
+</ul>
+""", prefix="../") + box("3. Recursos de Calibración: EVC Electronic y Dataman Programmers", "objectives", r"""
+<p>El trabajo riguroso en ingeniería de centralitas requiere apoyarse en las herramientas estándar del sector y en la documentación técnica oficial:</p>
+
+""" + figura("enlaces_web_evc_dataman_qr.png", "Accesos directos y códigos QR a los portales tecnológicos de referencia: EVC Electronic (www.evc.de) para software WinOLS, módulos de Checksum y bases de datos Damos, y Dataman Programmers (www.dataman.com) para estaciones universales de hardware y adaptadores de zócalo.", 18, prefix="../") + r"""
+
+<div class="mag-grid">
+  <div class="mag-card">
+    <h4>EVC Electronic (www.evc.de)</h4>
+    <div class="sym">EVC</div>
+    <div class="ud">Estándar Industrial Alemán</div>
+    <p>Desarrollador de <strong>WinOLS</strong>, simuladores de memoria OLS300/OLS501 y archivos de definición oficial <strong>DAMOS / ASAP2 (A2L)</strong>, que contienen los nombres reales de los ejes, factores de conversión y fórmulas físicas de cada variable.</p>
+  </div>
+  <div class="mag-card">
+    <h4>Dataman Programmers (www.dataman.com)</h4>
+    <div class="sym">DATAMAN</div>
+    <div class="ud">Equipos de Laboratorio y Microelectrónica</div>
+    <p>Líder internacional en programadores universales de chips de 48 pines (<strong>Dataman 48Pro2</strong>), adaptadores BGA/TSOP/SOIC de alta precisión y software de lectura hexadecimal con comprobación de integridad eléctrica pin a pin.</p>
+  </div>
+</div>
 """, prefix="../") + nav_block("03-modificacion-mapas-checksum")
+
 
 # ===============================================================
 # TEMA 4: DIAGNÓSTICO FÍSICO Y REPARACIÓN EN BANCO
 # ===============================================================
 BODIES["04-diagnostico-reparacion-hardware"] = box("1. Equipamiento del Puesto de Trabajo Electrónico", "experiment", r"""
-<p>La reparación física de averías internas en una centralita requiere un laboratorio de electrónica debidamente acondicionado y aislado de las partículas de grasa y polvo del taller mecánico general:</p>
+<p>La reparación física de averías internas en una centralita requiere un puesto de laboratorio debidamente acondicionado y aislado del polvo y grasas del taller mecánico general:</p>
 
 <div class="mag-grid">
   <div class="mag-card">
@@ -418,16 +466,21 @@ BODIES["04-diagnostico-reparacion-hardware"] = box("1. Equipamiento del Puesto d
   </div>
 </div>
 
-<div class="callout nota">
-  <span class="cap">Cámara Termográfica de Banco: El Localizador Instantáneo de Cortos</span>
-  <p>Cuando una centralita presenta un consumo excesivo en banco (ej. &gt; 1,5 A sin activar encendido), el método más rápido y no invasivo consiste en enfocar la placa con una <strong>cámara termográfica infrarroja</strong>. El componente defectuoso (generalmente un diodo supresor TVS, un condensador tantalio en corto o el propio chip regulador de 5V) brillará intensamente en pantalla al disipar potencia en forma de calor antes de que la pista se carbonice.</p>
-</div>
-""", prefix="../") + box("2. Diagnóstico y Reparación de las 5 Averías Más Comunes", "case", r"""
+<h4>Anatomía Clásica de Centralitas Bosch con Memoria EPROM UV</h4>
+<p>El conocimiento de la evolución de las centralitas permite entender la disposición de los buses de datos y las etapas de potencia desde las primeras inyecciones electrónicas hasta los sistemas modernos:</p>
+
+""" + figura("despiece_centralita_bosch_eprom_uv.png", "Despiece y anatomía constructiva de centralita Bosch clásica: encapsulado de memoria EPROM con ventana de cuarzo para borrado por luz ultravioleta (UV), búferes de interfaz de bus de datos y microprocesador central.", 19, prefix="../") + r"""
+""", prefix="../") + box("2. Diagnóstico y Reparación de las Averías Más Frecuentes en Placa", "case", r"""
 <p>En el taller de automoción, más del 80% de los fallos de hardware en UCEs se concentran en 5 patrones de avería perfectamente diagnosticables:</p>
 
-""" + figura("diagrama_circuito_reparacion_5v.svg", "Esquema del circuito regulador de 5V de sensores y protocolo de comprobación", 4, prefix="../") + r"""
+""" + figura("diagrama_circuito_reparacion_5v.svg", "Esquema del circuito regulador de 5V de sensores y protocolo de comprobación en banco ante cortocircuitos externos.", 20, prefix="../") + r"""
 
-<h4>Las 5 Averías Frecuentes y su Reparación</h4>
+<h4>Inspección a Doble Cara en Placas Bosch</h4>
+<p>Las placas de centralitas modernas montan componentes en ambas caras para maximizar la densidad de integración y disipar el calor hacia el chasis metálico:</p>
+
+""" + figura("placa_uce_bosch_ambas_caras.png", "Inspección y diagnóstico a doble cara de placa PCB Bosch: cara superior con microcontrolador, oscilador de cuarzo y transistores MOSFET de potencia; cara inferior con memoria serie EEPROM SOIC-8 y condensadores de desacoplo SMD.", 21, prefix="../") + r"""
+
+<h4>Protocolo de Reparación de las 5 Averías Frecuentes</h4>
 <table class="tabla-curso">
   <thead>
     <tr>
@@ -464,6 +517,20 @@ BODIES["04-diagnostico-reparacion-hardware"] = box("1. Equipamiento del Puesto d
     </tr>
   </tbody>
 </table>
+""", prefix="../") + box("3. Sistemas Inmovilizadores, Clonación y Desinmovilización (Immo-Off)", "technology", r"""
+<p>El sistema inmovilizador electrónico impide el arranque no autorizado del vehículo mediante un intercambio criptográfico entre la llave del conductor y la centralita motor:</p>
+
+""" + figura("sistema_inmovilizador_citroen.png", "Esquema general del sistema inmovilizador de automoción: llave con transponder de radiofrecuencia (RFID), bobina antena en bombín de contacto, UCE de gestión motor / módulo inmovilizador y electroválvula o relé de corte de inyección.", 22, prefix="../") + r"""
+
+<h4>Identificación de la Memoria EEPROM del Inmovilizador</h4>
+<p>En muchas centralitas de inyección de gasolina y diésel, los datos del inmovilizador no residen en la Flash del procesador, sino en un chip EEPROM serie independiente de 8 patillas:</p>
+
+""" + figura("placa_uce_gasolina_eeprom_inmo.png", "Placa de circuito de UCE de gasolina: diferenciación física entre la memoria de gestión de motor y la memoria EEPROM de 8 pines dedicada a los códigos del sistema inmovilizador.", 23, prefix="../") + r"""
+
+<h4>Comparativa con Módulos de Seguridad y Airbag</h4>
+<p>El tratamiento de memorias en centralitas de seguridad pasiva (Airbag) comparte metodología con las UCE de motor, requiriendo la lectura de EEPROM para el borrado de datos de impacto (<em>crash data clear</em>):</p>
+
+""" + figura("placas_uce_airbag_y_nissan.png", "Disposición de módulos auxiliares y de seguridad: placa de UCE de airbag con condensadores electrolíticos de reserva de energía para disparo pirotécnico y acelerómetro de impacto, junto a placa de UCE de gestión de motor Nissan.", 24, prefix="../") + r"""
 """, prefix="../") + nav_block("04-diagnostico-reparacion-hardware")
 
 
@@ -478,198 +545,149 @@ BODIES["05-normativa-pass-thru-j2534"] = box("1. Normativa Europea y el Protocol
 <div class="mag-grid">
   <div class="mag-card">
     <h4>SAE J2534-1</h4>
-    <div class="sym">VCI</div>
-    <div class="ud">Emisiones y Motor</div>
-    <p>Define la interfaz estándar de reprogramación obligatoria para todas las centralitas vinculadas a emisiones contaminantes (UCE de motor y transmisión).</p>
+    <div class="sym">J2534-1</div>
+    <div class="ud">Reprogramación de Emisiones</div>
+    <p>Estándar base obligatorio que cubre la reprogramación de cualquier módulo relacionado con emisiones (ECU de motor y TCM de caja de cambios automática).</p>
   </div>
   <div class="mag-card">
     <h4>SAE J2534-2</h4>
-    <div class="sym">EXT</div>
-    <div class="ud">Arquitectura Completa</div>
-    <p>Extensión que habilita el acceso y telecarga sobre el resto de módulos del vehículo: ABS/ESP, airbags, dirección asistida, cuadro y unidades de carrocería (BCM).</p>
+    <div class="sym">J2534-2</div>
+    <div class="ud">Módulos de Carrocería y Confort</div>
+    <p>Extensión avanzada para telecarga y codificación de módulos de carrocería (BCM), frenos (ABS/ESP), dirección asistida, cuadro y unidades multimedia.</p>
   </div>
 </div>
 
-""" + figura("diagrama_instalacion_passthru.svg", "Instalación de taller y requisitos de seguridad para reprogramación Pass-Thru", 5, prefix="../") + r"""
+""" + figura("diagrama_instalacion_passthru.svg", "Esquema de conexión para reprogramación Pass-Thru en taller con estabilizador de tensión y portal oficial OEM.", 25, prefix="../") + r"""
 
-<h4>Portales Oficiales de Fabricantes para Talleres Multimarca</h4>
-<table class="tabla-curso">
-  <thead>
-    <tr>
-      <th>Fabricante / Grupo</th>
-      <th>Software Oficial</th>
-      <th>Portal de Acceso Web</th>
-      <th>Modalidad de Tarifas</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Grupo Volkswagen (Audi, VW, SEAT, Skoda)</strong></td>
-      <td><strong>ODIS Service</strong></td>
-      <td>erWin (con cuenta de seguridad GeKo)</td>
-      <td>Tarifas por horas (ej. 1h / 1 día / suscripción anual) + coste de telecarga de firmware.</td>
-    </tr>
-    <tr>
-      <td><strong>BMW Group (BMW, MINI)</strong></td>
-      <td><strong>ISTA / AIR</strong></td>
-      <td>BMW AOS (Aftersales Online System)</td>
-      <td>Acceso por tickets horarios o diarios para programación de software (I-Level).</td>
-    </tr>
-    <tr>
-      <td><strong>Mercedes-Benz</strong></td>
-      <td><strong>Xentry Diagnosis</strong></td>
-      <td>Mercedes-Benz B2B Connect</td>
-      <td>Créditos horarios con autenticación de dos factores (2FA) para codificación SCN online.</td>
-    </tr>
-    <tr>
-      <td><strong>Stellantis (Peugeot, Citroën, Opel, Fiat)</strong></td>
-      <td><strong>Diagbox / wiTECH</strong></td>
-      <td>Service Box / Stellantis Technical Info</td>
-      <td>Tokens individuales de telecarga o pases temporales de diagnosis.</td>
-    </tr>
-    <tr>
-      <td><strong>Renault Group</strong></td>
-      <td><strong>Clip / ADT</strong></td>
-      <td>Renault Infotech / ASDE</td>
-      <td>Fichas horarias y compra de tokens para telecarga de calculadores de inyección.</td>
-    </tr>
-    <tr>
-      <td><strong>Ford Motor Company</strong></td>
-      <td><strong>FDRS / FJDS</strong></td>
-      <td>Ford Service Info Portal</td>
-      <td>Licencia diaria/mensual para reprogramación de módulos PCM, TCM y BCM.</td>
-    </tr>
-  </tbody>
-</table>
-""", prefix="../") + box("2. Requisitos Críticos de Taller: El Estabilizador de Tensión", "alert", r"""
-<p>El proceso de flasheo oficial de una centralita mediante Pass-Thru implica el borrado completo de la memoria Flash y la grabación sucesiva de bloques de datos durante un tiempo que oscila entre <strong>15 minutos y más de 1 hora</strong>. Durante esta operación, el contacto está activado (KL15 ON), lo que provoca que los sistemas del vehículo permanezcan en alerta continua.</p>
-
-<div class="callout peligro">
-  <span class="cap">¿Por qué se Disparan los Electroventiladores a Máxima Potencia?</span>
-  <p>Al iniciarse el borrado de la memoria Flash de la ECU motor, el microcontrolador cesa temporalmente la emisión de mensajes CAN de confirmación de temperatura de refrigerante. La centralita de carrocería o el módulo de electroventiladores interpreta esta ausencia como una condición de <strong>fallo catastrófico de seguridad</strong> (<em>fail-safe</em>), activando inmediatamente los ventiladores a su máxima velocidad. El consumo de corriente del vehículo salta instantáneamente de 15 A a <strong>más de 60 A - 80 A</strong>.</p>
-  <p>Si el taller no dispone de un <strong>estabilizador de tensión profesional de 70 A a 100 A</strong>, la tensión de la batería colapsará por debajo de los 11,5 V en menos de 3 minutos. El microcontrolador abortará la escritura en mitad del proceso, dejando la centralita <strong>totalmente inservible (bricked)</strong>.</p>
-</div>
-
-<h4>Protocolo de Preparación del Vehículo antes de Iniciar Pass-Thru</h4>
-<ol>
-  <li><strong>Conectar un estabilizador de tensión</strong> de alto amperaje en modo <em>Diagnostic / Showroom</em> fijado a 13,8 V - 14,4 V con cables de sección mínima de 16 mm². Prohibido utilizar cargadores convencionales por su excesivo rizado de corriente alterna (<em>AC ripple</em>), que corrompe la trama de datos CAN.</li>
-  <li><strong>Conectar el portátil a la red eléctrica de 230 V</strong> y desactivar completamente las opciones de suspensión, apagado de pantalla y desconexión selectiva de puertos USB en Windows.</li>
-  <li><strong>Utilizar conexión a Internet obligatoriamente por CABLE ETHERNET (RJ45)</strong>. Desactivar el Wi-Fi del ordenador para evitar pérdidas momentáneas de paquetes de datos durante la telecarga.</li>
-  <li><strong>Apagar todos los consumidores parásitos:</strong> Luces de cruce y diurnas, climatizador, radio/pantalla multimedia y asegurarse de no abrir ni cerrar puertas durante el proceso.</li>
-</ol>
+<h4>Condiciones Obligatorias de Taller para Telecarga Pass-Thru</h4>
+<ul class="ra-list">
+  <li><strong>Estabilizador de Tensión Grado Taller (70 A - 100 A):</strong> Una telecarga oficial OEM puede prolongarse de 20 minutos a más de 1 hora. Durante este tiempo, la bomba de combustible, ventiladores y centralitas secundarias permanecen activas, consumiendo entre 25 A y 50 A. El estabilizador debe mantener la red entre 13,8 V y 14,4 V sin rizado ni oscilaciones.</li>
+  <li><strong>Conexión a Internet Robusta por Cable Ethernet:</strong> Prohibido terminantemente el uso de redes Wi-Fi inestables. Si la conexión se interrumpe durante la descarga o validación del certificado digital, el proceso puede abortar en plena escritura.</li>
+  <li><strong>Interfaz VCI Homologada:</strong> Uso de cabezales compatibles de alta calidad (Bosch KTS 560/590, DrewTech CarDAQ-Plus 3, Actia PassThru XS 2G).</li>
+  <li><strong>Portales Oficiales de Fabricante:</strong> Registro profesional en portales oficiales (VAG erWin, BMW AOS, Mercedes B2B Connect, Ford FDRS, Stellantis) con adquisición de suscripciones por horas o por sesión de vehículo.</li>
+</ul>
 """, prefix="../") + nav_block("05-normativa-pass-thru-j2534")
 
 
 # ===============================================================
 # TEMA 6: CASOS PRÁCTICOS DE TALLER PASO A PASO
 # ===============================================================
-BODIES["06-casos-practicos-taller"] = box("1. Metodología de Intervención en 4 Casos Reales", "case", r"""
-<p>A continuación se detallan 4 procedimientos de trabajo protocolizados que representan las situaciones cotidianas más complejas a las que se enfrenta un electromecánico en el taller:</p>
-
-<div class="ejemplo">
-  <div class="ej-head">
-    <span>CASO 1: Clonación en Banco (Bench Mode) de UCE Bosch EDC17C64</span>
-    <span class="badge">VAG 1.6 TDI</span>
-  </div>
-  <div class="ej-body">
-    <div class="dato"><strong>Problema:</strong> Vehículo inmovilizado por entrada de agua en el conector de la ECU original. Se dispone de una centralita idéntica procedente de desguace (misma referencia hardware).</div>
-    <div class="paso">
-      <span class="n">1</span>
-      <strong>Conexión de Pinout en Banco:</strong> Consultar el esquema de pines en la base de datos de la herramienta (ej. Autotuner/Flex). Conectar los pines de alimentación (+12V permanente, ignición KL15), masa GND, bus CAN (CAN-H y CAN-L) y los <strong>dos pines GPT (GPT1 y GPT2)</strong> en el conector de la centralita sin abrir la carcasa sellada.
-    </div>
-    <div class="paso">
-      <span class="n">2</span>
-      <strong>Lectura Completa (Full Read):</strong> Alimentar con la fuente regulada a 13,5 V. El software inyecta la frecuencia de desbloqueo GPT y extrae en banco la <strong>Flash interna (TC1797) y la EEPROM</strong> de la UCE original dañada. Guardar copia de seguridad fechada.
-    </div>
-    <div class="paso">
-      <span class="n">3</span>
-      <strong>Escritura en UCE Donante:</strong> Desconectar la centralita averiada y conectar la unidad de desguace con el mismo mazo de pines. Seleccionar la función de escritura completa volcando los archivos Flash y EEPROM leídos.
-    </div>
-    <div class="resultado">
-      ✓ Resultado: La UCE donante hereda el 100% de los datos de inmovilizador, bastidor VIN y calibración. Se monta en el vehículo y arranca de inmediato sin necesidad de acudir al concesionario oficial.
-    </div>
-  </div>
-</div>
-
-<div class="ejemplo">
-  <div class="ej-head">
-    <span>CASO 2: Diagnóstico y Sustitución de Regulador de 5V en Placa</span>
-    <span class="badge">Hardware SMD</span>
-  </div>
-  <div class="ej-body">
-    <div class="dato"><strong>Problema:</strong> Centralita Bosch EDC16C34 de Peugeot/Ford. Registra avería simultánea en sensor de presión de raíl, caudalímetro y pedal del acelerador con código P0641 (Tensión de referencia de sensores A).</div>
-    <div class="paso">
-      <span class="n">1</span>
-      <strong>Comprobación con Polímetro en Vehículo:</strong> Desconectar todos los sensores de la línea de 5V. La tensión entre el pin de alimentación del conector y masa sigue marcando 0,2 V (debería marcar 5,00 V al retirar la carga externa).
-    </div>
-    <div class="paso">
-      <span class="n">2</span>
-      <strong>Extracción y Apertura Segura en Banco:</strong> Retirar los tornillos Torx de la carcasa de la centralita. Aplicar calor perimetral a 90 °C con pistola de aire caliente para ablandar el sellador de silicona y abrir con palancas plásticas.
-    </div>
-    <div class="paso">
-      <span class="n">3</span>
-      <strong>Localización del Componente:</strong> Rastrear con la punta del multímetro en continuidad la pista del pin de 5V hasta el circuito integrado regulador (Bosch 30344 / 40048). Medir resistencia entre la patilla de salida y masa: marca <strong>1,2 Ω (cortocircuito franco interno)</strong>.
-    </div>
-    <div class="paso">
-      <span class="n">4</span>
-      <strong>Procedimiento de Sustitución SMD:</strong> Aplicar cinta Kapton sobre los componentes colindantes para protegerlos del calor. Añadir flux líquido y calentar uniformemente con tobera de aire caliente a 360 °C hasta que el estaño funda. Retirar el chip con pinzas de precisión. Limpiar los pads de la placa con malla de cobre y soldar el regulador de repuesto aplicando flux y soldadura nueva.
-    </div>
-    <div class="resultado">
-      ✓ Resultado: Alimentada en banco a 12V, la salida mide <strong>5,01 V estables</strong>. Se sella con silicona técnica de poliuretano y la UCE vuelve a funcionar con normalidad.
-    </div>
-  </div>
-</div>
-
-<div class="ejemplo">
-  <div class="ej-head">
-    <span>CASO 3: Rescate de UCE Brickeada mediante Bootloader</span>
-    <span class="badge">Recuperación</span>
-  </div>
-  <div class="ej-body">
-    <div class="dato"><strong>Problema:</strong> Centralita Continental SID208 bloqueada por corte fortuito de batería durante una reprogramación por toma OBD-II. La UCE no responde a la diagnosis ni permite comunicación estándar.</div>
-    <div class="paso">
-      <span class="n">1</span>
-      <strong>Apertura y Localización del Pad de Boot:</strong> Abrir la tapa metálica de la UCE. Consultar el esquema de conexión en modo Bootloader para el procesador TriCore TC1797.
-    </div>
-    <div class="paso">
-      <span class="n">2</span>
-      <strong>Conexión de Resistencia de Boot:</strong> Soldar un cable fino con una <strong>resistencia de 1 kΩ en serie</strong> conectada entre el pad de Boot de la placa y la masa (GND) del programador.
-    </div>
-    <div class="paso">
-      <span class="n">3</span>
-      <strong>Arranque en Modo Fábrica y Reescritura:</strong> Encender la fuente. El procesador, al tener el pin de boot en nivel bajo forzado por la resistencia, ignora el firmware corrupto de la Flash y ejecuta el microcódigo de fábrica residente en ROM. La herramienta reconoce la UCE y permite reescribir el archivo de calibración original (Backup).
-    </div>
-    <div class="resultado">
-      ✓ Resultado: Se reescribe la Flash al 100%. Se desuelda el cable de boot, se cierra la centralita y se recupera completamente la comunicación OBD.
-    </div>
-  </div>
-</div>
+BODIES["06-casos-practicos-taller"] = box("1. Caso Práctico 1: Clonación de ECU Bosch EDC17C64 en Banco (Bench Mode)", "case", r"""
+<h4>Vehículo: Volkswagen Golf VII 2.0 TDI (Centralita quemada por cortocircuito externo)</h4>
+<ol class="pasos-taller">
+  <li><strong>Fase 1: Conexión en Banco sin abrir la carcasa.</strong> Identificar el pinout del conector exterior de la ECU EDC17C64 en el software de la herramienta (FLEX o KESS3). Conectar alimentación (+12V permanente, +12V bajo contacto KL15, masa GND), línea CAN-High (pin 67), línea CAN-Low (pin 68) y los dos canales de sincronización GPT (GPT1 y GPT2).</li>
+  <li><strong>Fase 2: Lectura del Backup Completo de la ECU Original.</strong> Alimentar a 13,5 V y ejecutar la lectura en Modo Bench. El software sincroniza las frecuencias GPT y descarga tres archivos: Micro Flash interna (TC1797, 4 MB), Flash externa (si existe) y memoria EEPROM (donde residen los datos del inmovilizador, bastidor y codificación).</li>
+  <li><strong>Fase 3: Volcado en la ECU de Desguace (Donante).</strong> Conectar la centralita donante con la misma referencia de hardware Bosch (0 281 xxx xxx). Realizar la escritura completa del archivo Micro Flash y EEPROM de la unidad original. El software adapta automáticamente la firma digital y el Checksum.</li>
+  <li><strong>Fase 4: Verificación en Vehículo.</strong> Montar la ECU clonada en el vehículo. Realizar diagnosis completa con VCDS u ODIS. Borrar DTCs esporádicos y verificar el arranque inmediato del motor sin parpadeo del testigo de inmovilizador.</li>
+</ol>
+""", prefix="../") + box("2. Caso Práctico 2: Reparación de Regulador de 5V y Línea en Corto en Delphi DCM3.7", "experiment", r"""
+<h4>Vehículo: Kia Sportage 1.7 CRDi (Avería: DTC P0642 - Tensión de referencia del sensor A baja)</h4>
+<ol class="pasos-taller">
+  <li><strong>Diagnóstico Previo en Vehículo:</strong> Medir tensión con multímetro en el sensor de presión de raíl y sensor MAP. Se registra 0,42 V en lugar de los 5,00 V preceptivos. Al desconectar todos los sensores del motor, la tensión no sube, confirmando que la avería reside dentro de la ECU o en el mazo.</li>
+  <li><strong>Comprobación en Banco:</strong> Conectar la ECU Delphi en la fuente de laboratorio limitando la corriente a 300 mA. Medir la resistencia entre la salida de 5V de sensores y masa: el multímetro pita marcando 2,1 Ω (cortocircuito franco).</li>
+  <li><strong>Localización Térmica:</strong> Con la fuente alimentando a 12V, enfocar la placa con la cámara termográfica. El circuito integrado regulador de tensión multipin se calienta instantáneamente a 75 °C mientras el resto de la placa permanece a 22 °C.</li>
+  <li><strong>Procedimiento de Rework SMD:</strong> Aplicar flux en pasta en las patillas del integrado. Con la tobera circular de aire caliente a 360 °C y caudal medio, calentar de forma homogénea durante 35 segundos hasta la fusión del estaño. Retirar con pinzas de vacío.</li>
+  <li><strong>Limpieza y Montaje:</strong> Limpiar los pads con malla de desoldar y alcohol isopropílico. Posicionar el chip regulador nuevo (recambio original), aplicar flux líquido y soldar patilla a patilla con soldador de punta fina a 340 °C. Verificar la impedancia de salida (> 10 kΩ) y alimentar: la línea entrega 5,02 V estables.</li>
+</ol>
 """, prefix="../") + nav_block("06-casos-practicos-taller")
 
 
 # ===============================================================
-# TEMA 7: MEDIATECA TÉCNICA
+# TEMA 7: MEDIATECA TÉCNICA: RECURSOS AUDIOVISUALES
 # ===============================================================
-BODIES["07-mediateca-tecnica"] = box("1. Recursos Audiovisuales y Demostraciones Prácticas", "video", r"""
-<p>Selección de recursos audiovisuales técnicos y demostraciones verificadas para afianzar los procedimientos de taller:</p>
+BODIES["07-mediateca-tecnica"] = box("1. Demostraciones Prácticas de Taller en Vídeo (YouTube Verificados)", "video", r"""
+<p>Selección de recursos audiovisuales técnicos y demostraciones verificadas en laboratorio automotriz para afianzar los procedimientos de programación y reparación:</p>
 
-""" + video_embed("cj50cas", "Principios de Control de Módulos y Divisores de Tensión", "Fundamentos del control electrónico, divisores resistivos para lectura multiplexada de señales y conmutación de etapas de potencia mediante relés y transistores.", "Autodata Training", "verified") + r"""
+""" + video_embed("en3G5PQPeXc", "Lectura y Escritura de ECU en Banco (Bench Mode) con Alientech KESS3", "Demostración práctica paso a paso del conexionado de pines de alimentación (+12V, GND), línea de comunicación CAN High/Low y pines de sincronización GPT en una centralita Bosch EDC17CP44 sin necesidad de abrir la carcasa de aluminio.", "ReproRACE - Formación Técnica", "Demostración Bench", "#2563eb") + r"""
 
-""" + video_embed("jc75cas", "Circuitos Elevadores y Reductores (Pull-Up y Pull-Down)", "Comprobación de líneas de tensión de referencia de 5V y monitorización de señales analógicas y digitales en sensores del motor.", "Autodata Training", "verified") + r"""
+""" + video_embed("0GdRhVLkLPM", "WinOLS para Principiantes: Localización e Interpretación de Mapas 2D y 3D", "Guía profesional sobre el uso del software estándar de la industria EVC WinOLS (www.evc.de). Métodos de búsqueda de curvas de inyección, reconocimiento visual de mapas en 2D, interpretación de ejes X/Y y representación tridimensional 3D.", "High Performance Academy (HPA)", "Calibración WinOLS", "#059669") + r"""
 
-""" + video_embed("et00cas", "Procedimiento de Reprogramación Pass-Thru (SAE J2534)", "Protocolo oficial de conexión de interfaz VCI J2534, portales web de fabricantes de automóviles y requisitos indispensables de estabilizadores de tensión en el taller.", "Autodata Training", "verified") + r"""
+""" + video_embed("F1S3lB2_N2k", "Procedimiento de Reprogramación Pass-Thru (SAE J2534) en Taller", "Configuración de una interfaz VCI Pass-Thru universal (Drew Technologies CarDAQ), conexión al puerto OBD-II, puesta en marcha del estabilizador de taller y proceso de flasheo oficial de firmware OEM.", "Drew Technologies / Opus IVS", "Pass-Thru J2534", "#d97706") + r"""
 
-<div class="callout nota">
-  <span class="cap">Ampliación Práctica en el Taller</span>
-  <p>Se recomienda complementar estos contenidos con prácticas directas de soldadura SMD en placas de desecho, familiarizándose con el uso de la estación de aire caliente, flux, desoldador de vacío y microscopio estereoscópico antes de intervenir en centralitas operativas.</p>
+""" + video_embed("-MUyW6gUB8o", "Técnicas Profesionales de Soldadura y Desoldadura SMD en Placas de Automoción", "Manejo de estación de soldadura con aire caliente a temperatura controlada, aplicación de flux no-clean, desoldado con pinzas de vacío y microsoldadura de circuitos integrados SOIC-8 y QFP sin dañar pistas.", "SDG Electronics / Laboratorio", "Taller de Soldadura", "#dc2626") + r"""
+
+""" + video_embed("2IuZa-357zQ", "Diagnóstico de Centralitas en Banco con Trazador de Curvas y Osciloscopio", "Procedimiento avanzado de localización de averías en banco mediante trazador de curvas por componentes y osciloscopio digital. Comprobación de líneas de excitación de inyectores y bobinas.", "ElectroAuto Training", "Diagnosis en Banco", "#7c3aed") + r"""
+""", prefix="../") + box("2. Módulos Audiovisuales de Referencia Autodata Training (Taller / Aula)", "competencies", r"""
+<p>Guía de estudio técnico para los módulos audiovisuales oficiales de Autodata Training disponibles en el archivo local de la mediateca del taller (<code>H:\0-TRAINING\Autodata_Videos\módulos de control/</code>):</p>
+
+""" + autodata_card(
+    "cj50cas",
+    "Principios de Control de Módulos y Divisores de Tensión",
+    "Fundamentos del control electrónico en automoción: divisores resistivos para lectura analógica de sensores de posición y temperatura, multiplexado de señales, y conmutación de etapas de potencia mediante relés de 4 clavijas y transistores.",
+    [
+        "Funcionamiento de los divisores resistivos en la lectura de sensores NTC y potenciómetros.",
+        "Diagnóstico de caída de tensión en contactos de relé y conmutadores.",
+        "Interpretación de los estados lógicos de control en módulos electrónicos del vehículo."
+    ],
+    "12 min 30 s",
+    "Los módulos de control dependen de una alimentación precisa y constante. Cuando analizamos las entradas analógicas, el microprocesador utiliza una red de resistencias en divisor de tensión para convertir las variaciones de resistencia del sensor en una señal de tensión medible por el convertidor analógico-digital..."
+) + r"""
+
+""" + autodata_card(
+    "jc75cas",
+    "Circuitos Elevadores y Reductores (Pull-Up y Pull-Down)",
+    "Comprobación de líneas de tensión de referencia de 5V y polarización de señales en sensores de régimen, fase y posición. Protocolos de comprobación de cableado y detección de cortocircuitos a positivo o masa.",
+    [
+        "Diferenciación práctica entre circuitos Pull-Up (resistencia a 5V/12V) y Pull-Down (resistencia a masa).",
+        "Métodos de comprobación de la línea de 5V de referencia con multímetro y osciloscopio.",
+        "Identificación de averías cuando la señal se queda flotante por rotura de resistencia de polarización."
+    ],
+    "14 min 15 s",
+    "Un circuito Pull-Up mantiene una línea de entrada digital en nivel lógico alto mientras el interruptor o sensor de efecto Hall está abierto. Al cerrarse, la línea cae a masa. Si la resistencia interna de la ECU se abre, la señal quedará en un nivel indefinido..."
+) + r"""
+
+""" + autodata_card(
+    "jc85cas",
+    "Lógica Interna y Detección de Averías en Módulos de Control",
+    "Arquitectura interna de conmutación de módulos, accionadores High-Side y Low-Side, y sistemas de protección electrónica activa sin fusibles basados en la detección de corriente por shunts y transistores inteligentes.",
+    [
+        "Conmutación por el lado positivo (High-Side) vs conmutación por el lado de masa (Low-Side).",
+        "Sistemas de protección térmica y de sobrecorriente que sustituyen a los fusibles tradicionales.",
+        "Diagnóstico de drivers inteligentes y lectura de códigos de avería de circuito abierto o cortocircuito."
+    ],
+    "15 min 40 s",
+    "Las unidades de control modernas prescinden de fusibles individuales en muchos de sus circuitos de salida. En su lugar, incorporan transistores de efecto de campo inteligentes que monitorizan la corriente que fluye a través de ellos..."
+) + r"""
+
+""" + autodata_card(
+    "et00cas",
+    "Reprogramación Pass-Thru SAE J2534 y Calibración OEM",
+    "Procedimiento integral de reprogramación oficial mediante interfaces Pass-Thru J2534 y servidores en la nube de los fabricantes de automóviles. Diferenciación entre firmware base y calibración de mapas, y requisitos de alimentación estabilizada.",
+    [
+        "Marco normativo Euro 5 y Euro 6 para el acceso independiente a telecargas de software.",
+        "Conexión paso a paso del interfaz J2534 entre el PC del taller, la toma OBD-II y el servidor OEM.",
+        "Protocolo obligatorio de estabilización de tensión: mantenimiento estricto entre 13,8 V y 14,4 V durante todo el proceso."
+    ],
+    "18 min 20 s",
+    "El estándar SAE J2534 define una capa de abstracción entre el software del fabricante del vehículo y el hardware del interfaz de diagnosis. Durante el proceso de telecarga, cualquier fluctuación de tensión por debajo de 12,0 V puede interrumpir la escritura en la memoria Flash..."
+) + r"""
+""", prefix="../") + box("3. Centros de Referencia Oficiales y Enlaces a Portales Industriales", "roadmap", r"""
+<p>Consulte las herramientas, documentación y especificaciones oficiales en los portales de referencia del sector:</p>
+
+""" + figura("enlaces_web_evc_dataman_qr.png", "Accesos directos y códigos QR a los portales tecnológicos de referencia: EVC Electronic (www.evc.de) para software WinOLS, módulos de Checksum y bases de datos Damos, y Dataman Programmers (www.dataman.com) para estaciones universales de hardware y adaptadores de zócalo.", 26, prefix="../") + r"""
+
+<div class="mag-grid">
+  <div class="mag-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <img src="../content/img/logo_evc.png" alt="Logo EVC Electronic" style="height:32px;width:auto;">
+      <h4 style="margin:0;">EVC Electronic</h4>
+    </div>
+    <div class="ud">Alemania · <a href="https://www.evc.de/" target="_blank" rel="noopener">www.evc.de</a></div>
+    <p>Empresa de referencia mundial para la ingeniería de calibración de software motor. Desarrolladora de <strong>WinOLS</strong>, módulos de recálculo matemático de Checksum para más de 100 familias de centralitas, y base de datos de calibración con archivos Damos y proyectos ASAM MCD 2MC (A2L).</p>
+  </div>
+  <div class="mag-card">
+    <h4>Dataman Programmers</h4>
+    <div class="ud">Reino Unido / USA · <a href="https://www.dataman.com/" target="_blank" rel="noopener">www.dataman.com</a></div>
+    <p>Fabricante especializado en programadores universales de chips de grado industrial y automotriz. Su modelo <strong>Dataman 48Pro2</strong> es la herramienta de referencia para lectura, copia y clonación directa de memorias Flash y EEPROM (SPI, I2C, Microwire, Paralelas) en laboratorio.</p>
+  </div>
 </div>
 """, prefix="../") + nav_block("07-mediateca-tecnica")
 
-# ===============================================================
-# CUESTIONARIO DE EVALUACIÓN FINAL (50 PREGUNTAS / 20 ACTIVAS)
-# ===============================================================
-spec_dir = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(spec_dir, "quiz_engine.html"), encoding="utf-8") as _f:
+
+# ---------------------------------------------------------------------------
+# 2. MOTOR DE EVALUACIÓN INTERACTIVA (TEST ALEATORIO 20/50 PREGUNTAS)
+# ---------------------------------------------------------------------------
+with open(os.path.join(os.path.dirname(__file__), "quiz_engine.html"), "r", encoding="utf-8") as _f:
     _QUIZ_ENGINE = _f.read()
 
 _PREGUNTAS_JS = r"""
