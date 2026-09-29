@@ -1,0 +1,415 @@
+<article class="box no-header"><header class="box-head no-icon"><button class="box-toggle box-toggle-on" title="Mostrar/ocultar"><span>Mostrar/ocultar</span></button></header>
+<div class="box-content"><div class="exe-static-content">
+
+<!-- Barra de progreso superior -->
+<div id="quiz-progress">
+  <div class="quiz-progress-top">
+    <span>Respondidas: <strong id="qp-count">0</strong> / <strong id="qp-total">20</strong></span>
+    <span class="step-indicator">Pregunta <b id="current-q-num">1</b> de <b id="total-q-num">20</b></span>
+  </div>
+  <div class="bar"><i id="qp-bar"></i></div>
+</div>
+
+<!-- Selector directo de preguntas por píldoras (1..20) -->
+<div class="quiz-nav-grid" id="quiz-pills" aria-label="Navegación entre preguntas"></div>
+
+<!-- Formulario con las preguntas del test (Modo 1 en 1) -->
+<form id="quiz-form" class="quiz-mode-paged" onsubmit="return false;"></form>
+
+<!-- Barra inferior de navegación paso a paso -->
+<div class="quiz-step-bar">
+  <button type="button" id="btn-prev" class="btn-curso sec" onclick="prevQuestion()" disabled>◀ Anterior</button>
+  <div class="step-indicator">Pregunta <b id="bar-q-num">1</b> / <b id="bar-total-num">20</b></div>
+  <div style="display:flex;gap:.5em;align-items:center;">
+    <button type="button" id="btn-next" class="btn-curso" onclick="nextQuestion()">Siguiente ▶</button>
+    <button type="button" id="btn-corregir" class="btn-curso" disabled>Finalizar y Corregir</button>
+  </div>
+</div>
+
+<div class="quiz-actions" style="margin-top:1em;">
+  <button type="button" id="btn-reintentar" class="btn-curso sec" style="display:none;">Volver a intentarlo (Nuevo test aleatorio)</button>
+  <button type="button" id="btn-toggle-view" class="btn-curso sec" style="display:none;">Ver todas las preguntas para repaso</button>
+</div>
+
+<!-- Tarjeta de calificación y reporte SCORM 1.2 -->
+<div id="quiz-result">
+  <div class="res-head"><h3 id="res-title"></h3><div class="res-score"><span id="res-pct">0</span>%</div><div id="res-line"></div></div>
+  <div class="res-body">
+    <p id="res-msg"></p>
+    <p class="aviso-scorm">La calificación oficial se registra automáticamente en el Libro de Calificaciones de EducaMadrid / Moodle mediante SCORM 1.2.</p>
+  </div>
+</div>
+
+</div></div></article>
+
+<script>
+/* ====== BANCO DE PREGUNTAS Y CONFIGURACIÓN ======
+   El marcador de abajo se sustituye por las variables:
+   - PREGUNTAS (banco de preguntas, ej. 50 preguntas {q, opts, correct, fb})
+   - NUM_PREGUNTAS (número de preguntas activas por intento, por defecto 20)
+   - PASS (porcentaje de aprobado, por defecto 50 o 70)
+   - RANDOMIZE_OPTIONS (por defecto true)
+*/
+/*__PREGUNTAS__*/
+
+var NUM_PREGUNTAS = (typeof NUM_PREGUNTAS !== "undefined") ? NUM_PREGUNTAS : 20;
+var RANDOMIZE_OPTIONS = (typeof RANDOMIZE_OPTIONS !== "undefined") ? RANDOMIZE_OPTIONS : true;
+var PASS = (typeof PASS !== "undefined") ? PASS : 50;
+
+var _ACTIVE_PREGUNTAS = [];
+var _CURRENT_INDEX = 0;
+var _CORREGIDO = false;
+var _MODE_PAGED = true;
+var LET = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+function typeset(){
+  if(window.MathJax && MathJax.typesetPromise){
+    MathJax.typesetPromise();
+  }
+}
+
+// Barajado Fisher-Yates de un array
+function shuffleArray(arr){
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+// Selección aleatoria de 20 preguntas sobre la base total y aleatorización anti-patrón
+function prepareQuestions(){
+  if(typeof PREGUNTAS === "undefined" || !PREGUNTAS || PREGUNTAS.length === 0){
+    _ACTIVE_PREGUNTAS = [];
+    return;
+  }
+  
+  // 1. Muestreo aleatorio de NUM_PREGUNTAS (ej. 20) a partir de la base total (ej. 50)
+  var shuffledPool = shuffleArray(PREGUNTAS);
+  var count = Math.min(NUM_PREGUNTAS, shuffledPool.length);
+  _ACTIVE_PREGUNTAS = shuffledPool.slice(0, count);
+
+  // 2. Barajado aleatorio de alternativas con guardián anti-patrones
+  // Garantiza que no haya secuencias predecibles como A, A, A o A, B, C, D...
+  var prevCorrect1 = -1;
+  var prevCorrect2 = -1;
+
+  _ACTIVE_PREGUNTAS.forEach(function(p, i){
+    var maxTries = 25;
+    var bestItems = null;
+    var bestCorrect = -1;
+
+    for(var tryNum = 0; tryNum < maxTries; tryNum++){
+      var items = [];
+      for(var j = 0; j < p.opts.length; j++){
+        items.push({ text: p.opts[j], origIdx: j });
+      }
+
+      var doShuffle = (typeof p.shuffle !== "undefined") ? p.shuffle : RANDOMIZE_OPTIONS;
+      if(doShuffle && items.length > 1){
+        items = shuffleArray(items);
+      }
+
+      var dispCorrect = -1;
+      for(var k = 0; k < items.length; k++){
+        if(items[k].origIdx === p.correct){
+          dispCorrect = k;
+          break;
+        }
+      }
+
+      bestItems = items;
+      bestCorrect = dispCorrect;
+
+      // REGLAS ANTI-PATRÓN:
+      // a) Evitar 3 respuestas correctas idénticas consecutivas (ej. no A, A, A)
+      var isSameStreak = (dispCorrect === prevCorrect1 && dispCorrect === prevCorrect2);
+      
+      // b) Evitar ciclos secuenciales ascendentes directos de más de 2 (ej. no A -> B -> C)
+      var isAscCycle = (prevCorrect1 >= 0 && prevCorrect2 >= 0 && 
+                        dispCorrect === (prevCorrect1 + 1) % 4 && 
+                        prevCorrect1 === (prevCorrect2 + 1) % 4);
+
+      if(!isSameStreak && !isAscCycle){
+        break;
+      }
+    }
+
+    p._displayOpts = bestItems;
+    p._displayCorrect = bestCorrect;
+    prevCorrect2 = prevCorrect1;
+    prevCorrect1 = bestCorrect;
+  });
+}
+
+function renderQuiz(){
+  prepareQuestions();
+  _CURRENT_INDEX = 0;
+  _CORREGIDO = false;
+  _MODE_PAGED = true;
+
+  var total = _ACTIVE_PREGUNTAS.length;
+  document.getElementById("qp-total").textContent = total;
+  document.getElementById("total-q-num").textContent = total;
+  document.getElementById("bar-total-num").textContent = total;
+  document.getElementById("qp-count").textContent = "0";
+  document.getElementById("qp-bar").style.width = "0%";
+  document.getElementById("btn-corregir").disabled = true;
+  document.getElementById("btn-corregir").style.display = "inline-block";
+  document.getElementById("btn-reintentar").style.display = "none";
+  document.getElementById("btn-toggle-view").style.display = "none";
+  document.getElementById("quiz-result").style.display = "none";
+
+  var form = document.getElementById("quiz-form");
+  form.className = "quiz-mode-paged";
+  var htmlForm = "";
+
+  // Renderizar píldoras de navegación rápida
+  var pillsContainer = document.getElementById("quiz-pills");
+  var htmlPills = "";
+  for(var i = 0; i < total; i++){
+    htmlPills += '<button type="button" class="quiz-nav-pill' + (i === 0 ? ' current' : '') + '" id="pill-' + i + '" onclick="jumpToQuestion(' + i + ')" title="Pregunta ' + (i + 1) + '">' + (i + 1) + '</button>';
+  }
+  pillsContainer.innerHTML = htmlPills;
+
+  // Renderizar preguntas
+  _ACTIVE_PREGUNTAS.forEach(function(p, i){
+    var activeClass = (i === 0) ? " active" : "";
+    htmlForm += '<div class="pregunta' + activeClass + '" id="preg-' + i + '">';
+    htmlForm += '  <div class="q-num">Pregunta ' + (i + 1) + ' de ' + total + '</div>';
+    htmlForm += '  <div class="q-text">' + p.q + (p.ctx ? '<span class="q-ctx">' + p.ctx + '</span>' : '') + '</div>';
+    htmlForm += '  <ul class="opciones">';
+    p._displayOpts.forEach(function(item, j){
+      var id = "q" + i + "o" + j;
+      htmlForm += '    <li>';
+      htmlForm += '      <label for="' + id + '">';
+      htmlForm += '        <input type="radio" id="' + id + '" name="q' + i + '" value="' + j + '" onchange="onAnswerSelected(' + i + ')">';
+      htmlForm += '        <span class="op-let">' + LET[j] + ')</span> <span>' + item.text + '</span>';
+      htmlForm += '      </label>';
+      htmlForm += '    </li>';
+    });
+    htmlForm += '  </ul>';
+    htmlForm += '  <div class="feedback"><span class="fb-cap"></span> <span class="fb-txt"></span></div>';
+    htmlForm += '</div>';
+  });
+
+  form.innerHTML = htmlForm;
+  updateNavControls();
+  typeset();
+}
+
+function showQuestion(idx){
+  if(idx < 0 || idx >= _ACTIVE_PREGUNTAS.length) return;
+  _CURRENT_INDEX = idx;
+
+  if(_MODE_PAGED){
+    var pregs = document.querySelectorAll("#quiz-form .pregunta");
+    pregs.forEach(function(p, i){
+      if(i === idx){
+        p.classList.add("active");
+      } else {
+        p.classList.remove("active");
+      }
+    });
+  }
+
+  // Actualizar píldora activa
+  var pills = document.querySelectorAll(".quiz-nav-pill");
+  pills.forEach(function(pill, i){
+    if(i === idx){
+      pill.classList.add("current");
+    } else {
+      pill.classList.remove("current");
+    }
+  });
+
+  updateNavControls();
+  typeset();
+
+  // Scroll suave al inicio de la pregunta en pantallas pequeñas
+  var qEl = document.getElementById("preg-" + idx);
+  if(qEl && window.innerWidth < 768){
+    qEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function jumpToQuestion(idx){
+  showQuestion(idx);
+}
+
+function prevQuestion(){
+  if(_CURRENT_INDEX > 0){
+    showQuestion(_CURRENT_INDEX - 1);
+  }
+}
+
+function nextQuestion(){
+  if(_CURRENT_INDEX < _ACTIVE_PREGUNTAS.length - 1){
+    showQuestion(_CURRENT_INDEX + 1);
+  }
+}
+
+function updateNavControls(){
+  var curNum = _CURRENT_INDEX + 1;
+  var total = _ACTIVE_PREGUNTAS.length;
+  document.getElementById("current-q-num").textContent = curNum;
+  document.getElementById("bar-q-num").textContent = curNum;
+
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+
+  btnPrev.disabled = (_CURRENT_INDEX === 0);
+  if(_CURRENT_INDEX === total - 1){
+    btnNext.style.display = "none";
+  } else {
+    btnNext.style.display = "inline-block";
+  }
+}
+
+function onAnswerSelected(qIdx){
+  var pill = document.getElementById("pill-" + qIdx);
+  if(pill){
+    pill.classList.add("answered");
+  }
+  updateProgress();
+}
+
+function countAnswered(){
+  var count = 0;
+  for(var i = 0; i < _ACTIVE_PREGUNTAS.length; i++){
+    if(document.querySelector('input[name="q' + i + '"]:checked')){
+      count++;
+    }
+  }
+  return count;
+}
+
+function updateProgress(){
+  var ans = countAnswered();
+  var total = _ACTIVE_PREGUNTAS.length;
+  document.getElementById("qp-count").textContent = ans;
+  document.getElementById("qp-bar").style.width = (100 * ans / total) + "%";
+  document.getElementById("btn-corregir").disabled = (ans < total);
+}
+
+function corregir(){
+  var ok = 0;
+  _CORREGIDO = true;
+
+  _ACTIVE_PREGUNTAS.forEach(function(p, i){
+    var box = document.getElementById("preg-" + i);
+    var sel = document.querySelector('input[name="q' + i + '"]:checked');
+    var ch = sel ? parseInt(sel.value, 10) : -1;
+    var labels = box.querySelectorAll(".opciones label");
+    var targetCorrect = (typeof p._displayCorrect !== "undefined" && p._displayCorrect >= 0) ? p._displayCorrect : p.correct;
+
+    box.classList.remove("ok", "ko");
+    Array.prototype.forEach.call(labels, function(l){
+      l.classList.remove("sel", "correcta");
+    });
+
+    if(ch >= 0 && labels[ch]){
+      labels[ch].classList.add("sel");
+    }
+    if(targetCorrect >= 0 && labels[targetCorrect]){
+      labels[targetCorrect].classList.add("correcta");
+    }
+
+    var cap = box.querySelector(".fb-cap");
+    var txt = box.querySelector(".fb-txt");
+    var pill = document.getElementById("pill-" + i);
+
+    if(ch === targetCorrect){
+      ok++;
+      box.classList.add("ok");
+      cap.textContent = "¡Correcto! ";
+      if(pill){
+        pill.classList.add("pill-ok");
+      }
+    } else {
+      box.classList.add("ko");
+      var letCorrect = (targetCorrect >= 0 && targetCorrect < LET.length) ? LET[targetCorrect] : (targetCorrect + 1);
+      cap.textContent = "Respuesta correcta: " + letCorrect + ". ";
+      if(pill){
+        pill.classList.add("pill-ko");
+      }
+    }
+
+    txt.innerHTML = p.fb;
+    Array.prototype.forEach.call(box.querySelectorAll("input"), function(x){
+      x.disabled = true;
+    });
+  });
+
+  var total = _ACTIVE_PREGUNTAS.length;
+  var pct = Math.round(100 * ok / total);
+  var passed = pct >= PASS;
+  var res = document.getElementById("quiz-result");
+
+  res.classList.remove("pass", "fail");
+  res.classList.add(passed ? "pass" : "fail");
+  document.getElementById("res-title").textContent = passed ? "¡Cuestionario superado!" : "Evaluación no superada";
+  document.getElementById("res-pct").textContent = pct;
+  document.getElementById("res-line").innerHTML = "<strong>" + ok + " de " + total + "</strong> respuestas correctas (Nota mínima: " + PASS + "%)";
+  document.getElementById("res-msg").textContent = passed ? 
+    "¡Enhorabuena! Has asimilado los conocimientos técnicos del curso con éxito." : 
+    "No has alcanzado la nota de corte mínima (" + PASS + "%). Revisa las explicaciones de cada pregunta para afianzar conceptos y vuelve a intentarlo.";
+
+  res.style.display = "block";
+  reportarSCORM(pct, passed);
+
+  document.getElementById("btn-corregir").style.display = "none";
+  document.getElementById("btn-reintentar").style.display = "inline-block";
+  document.getElementById("btn-toggle-view").style.display = "inline-block";
+
+  typeset();
+  res.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function toggleView(){
+  var form = document.getElementById("quiz-form");
+  var btn = document.getElementById("btn-toggle-view");
+  _MODE_PAGED = !_MODE_PAGED;
+
+  if(_MODE_PAGED){
+    form.className = "quiz-mode-paged";
+    btn.textContent = "Ver todas las preguntas para repaso";
+    showQuestion(_CURRENT_INDEX);
+  } else {
+    form.className = "quiz-mode-all";
+    btn.textContent = "Ver preguntas de una en una";
+  }
+  typeset();
+}
+
+function reintentar(){
+  renderQuiz();
+  var firstQ = document.getElementById("preg-0");
+  if(firstQ){
+    firstQ.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function reportarSCORM(pct, passed){
+  try {
+    if(typeof pipwerks === "undefined" || !pipwerks.SCORM) return;
+    var s = pipwerks.SCORM;
+    s.SetScoreMin(0);
+    s.SetScoreMax(100);
+    s.SetScoreRaw(pct);
+    s.SetCompletionScormActivity(passed ? "passed" : "failed");
+    if(typeof exitPageStatus !== "undefined"){
+      exitPageStatus = true;
+    }
+    s.save();
+  } catch(e){}
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  renderQuiz();
+  document.getElementById("btn-corregir").addEventListener("click", corregir);
+  document.getElementById("btn-reintentar").addEventListener("click", reintentar);
+  document.getElementById("btn-toggle-view").addEventListener("click", toggleView);
+});
+</script>

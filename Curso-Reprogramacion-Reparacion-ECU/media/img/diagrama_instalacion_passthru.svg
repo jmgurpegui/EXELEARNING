@@ -1,0 +1,119 @@
+<svg viewBox="0 0 920 460" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <rect width="920" height="460" fill="#f8fafc" rx="12" stroke="#cbd5e1" stroke-width="2"/>
+  <defs>
+    <filter id="p-shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Título Superior -->
+  <rect x="25" y="16" width="870" height="42" rx="8" fill="#1e293b"/>
+  <text x="460" y="43" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff" letter-spacing="1">INSTALACIÓN Y PROTOCOLO DE SEGURIDAD PARA REPROGRAMACIÓN PASS-THRU (SAE J2534)</text>
+
+  <!-- 1. El Vehículo -->
+  <g transform="translate(30, 80)">
+    <rect width="210" height="340" rx="10" fill="#ffffff" stroke="#64748b" stroke-width="2" filter="url(#p-shadow)"/>
+    <rect width="210" height="34" rx="10" fill="#475569"/>
+    <text x="105" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">VEHÍCULO (OBD-II)</text>
+
+    <!-- Batería del Coche -->
+    <rect x="20" y="55" width="170" height="80" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="105" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">BATERÍA DEL COCHE</text>
+    <text x="105" y="96" text-anchor="middle" font-size="10" fill="#7f1d1d">Consumo durante flasheo:</text>
+    <text x="105" y="114" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">30 A - 80 A (Ventiladores)</text>
+
+    <!-- Conector OBD-II -->
+    <rect x="20" y="160" width="170" height="70" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="105" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">TOMA OBD-II (DLC)</text>
+    <text x="105" y="205" text-anchor="middle" font-size="10" fill="#2563eb">Buses CAN / DoIP / K-Line</text>
+
+    <!-- Aviso Clave -->
+    <rect x="15" y="250" width="180" height="75" rx="6" fill="#fffbeb" stroke="#f59e0b"/>
+    <text x="25" y="270" font-size="10" font-weight="700" fill="#b45309">PRECAUCIÓN TALLER:</text>
+    <text x="25" y="286" font-size="9" fill="#92400e">Desactivar luces diurnas,</text>
+    <text x="25" y="300" font-size="9" fill="#92400e">climatizador, radio y</text>
+    <text x="25" y="314" font-size="9" fill="#92400e">evitar apertura de puertas.</text>
+  </g>
+
+  <!-- 2. Estabilizador de Tensión de Alta Potencia (GYSFLASH / Fronius) -->
+  <g transform="translate(280, 80)">
+    <rect width="180" height="150" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" filter="url(#p-shadow)"/>
+    <rect width="180" height="30" rx="8" fill="#16a34a"/>
+    <text x="90" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">ESTABILIZADOR 100A</text>
+    <text x="90" y="55" text-anchor="middle" font-size="12" font-weight="700" fill="#15803d">13,8 V - 14,4 V Fijos</text>
+    <text x="90" y="73" text-anchor="middle" font-size="10" fill="#166534">Modo DIAGNOSTIC / SHOWROOM</text>
+    <text x="90" y="93" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">0% Rizado Alterno (Ripple)</text>
+    <text x="90" y="115" text-anchor="middle" font-size="9" fill="#475569">Soporta picos de hasta 120A</text>
+    <text x="90" y="130" text-anchor="middle" font-size="9" fill="#475569">GYSFLASH 100.12 / Fronius</text>
+  </g>
+
+  <!-- Cables Gruesos Estabilizador a Batería -->
+  <path d="M 280 140 L 210 110" stroke="#16a34a" stroke-width="4"/>
+  <text x="245" y="115" text-anchor="middle" font-size="9" font-weight="700" fill="#15803d">16mm²</text>
+
+  <!-- 3. Interfaz VCI J2534 (Pass-Thru) -->
+  <g transform="translate(280, 260)">
+    <rect width="180" height="160" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" filter="url(#p-shadow)"/>
+    <rect width="180" height="30" rx="8" fill="#7c3aed"/>
+    <text x="90" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">INTERFAZ VCI PASS-THRU</text>
+    <text x="90" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#6d28d9">SAE J2534-1 / J2534-2</text>
+    <text x="90" y="75" text-anchor="middle" font-size="10" fill="#4c1d95">DrewTech CarDAQ / Bosch KTS</text>
+    <text x="90" y="90" text-anchor="middle" font-size="10" fill="#4c1d95">Actia PassThru+ / Texa</text>
+    <line x1="20" y1="105" x2="160" y2="105" stroke="#ddd6fe"/>
+    <text x="90" y="125" text-anchor="middle" font-size="9" fill="#5b21b6">Traductor bidireccional entre</text>
+    <text x="90" y="140" text-anchor="middle" font-size="9" font-weight="700" fill="#5b21b6">PC y Buses del Vehículo</text>
+  </g>
+
+  <!-- Cable OBD a VCI -->
+  <path d="M 210 200 L 280 320" stroke="#7c3aed" stroke-width="3" stroke-dasharray="4,2"/>
+  <text x="240" y="250" text-anchor="middle" font-size="9" font-weight="700" fill="#7c3aed">Cable OBD</text>
+
+  <!-- 4. PC de Taller con Software OEM -->
+  <g transform="translate(500, 80)">
+    <rect width="210" height="340" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="2" filter="url(#p-shadow)"/>
+    <rect width="210" height="34" rx="10" fill="#0284c7"/>
+    <text x="105" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">PC DE TALLER (DIAGNOSIS)</text>
+
+    <rect x="15" y="50" width="180" height="95" rx="6" fill="#f0f9ff" stroke="#bae6fd"/>
+    <text x="105" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="#0369a1">SOFTWARE OFICIAL OEM</text>
+    <text x="105" y="88" text-anchor="middle" font-size="10" fill="#0284c7">ODIS (VAG) · ISTA (BMW)</text>
+    <text x="105" y="103" text-anchor="middle" font-size="10" fill="#0284c7">Xentry (Mercedes) · Clip (Renault)</text>
+    <text x="105" y="118" text-anchor="middle" font-size="10" fill="#0284c7">Diagbox (Stellantis) · FDRS (Ford)</text>
+    <text x="105" y="133" text-anchor="middle" font-size="9" font-weight="700" fill="#075985">Licencia horaria/diaria OEM</text>
+
+    <rect x="15" y="160" width="180" height="155" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="25" y="180" font-size="11" font-weight="700" fill="#0f172a">Configuración PC Crítica:</text>
+    <text x="25" y="200" font-size="10" fill="#334155">✔ Alimentador 230V conectado</text>
+    <text x="25" y="218" font-size="10" fill="#334155">✔ Modo suspensión DESACTIVADO</text>
+    <text x="25" y="236" font-size="10" fill="#334155">✔ Antivirus/Firewall en pausa</text>
+    <text x="25" y="254" font-size="10" fill="#334155">✔ Drivers J2534 actualizados</text>
+    <text x="25" y="274" font-size="10" font-weight="700" fill="#dc2626">✘ PROHIBIDO USAR WI-FI</text>
+    <text x="25" y="292" font-size="9" fill="#991b1b">Usar cable Ethernet apantallado</text>
+  </g>
+
+  <!-- Conexión VCI a PC (USB Robusto) -->
+  <path d="M 460 340 L 500 340" stroke="#0284c7" stroke-width="3"/>
+  <text x="480" y="330" text-anchor="middle" font-size="9" font-weight="700" fill="#0284c7">USB</text>
+
+  <!-- 5. Conexión a Servidores Oficiales en la Nube -->
+  <g transform="translate(745, 120)">
+    <rect width="145" height="260" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2" filter="url(#p-shadow)"/>
+    <rect width="145" height="32" rx="8" fill="#1d4ed8"/>
+    <text x="72" y="21" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">SERVIDOR CLOUD OEM</text>
+
+    <text x="72" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1e3a8a">SERVIDORES DE MARCA</text>
+    <text x="72" y="85" text-anchor="middle" font-size="10" fill="#3b82f6">GeKo (Volkswagen)</text>
+    <text x="72" y="102" text-anchor="middle" font-size="10" fill="#3b82f6">BMW AOS Portal</text>
+    <text x="72" y="119" text-anchor="middle" font-size="10" fill="#3b82f6">Daimler B2B Connect</text>
+
+    <line x1="15" y1="135" x2="130" y2="135" stroke="#bfdbfe"/>
+    <text x="72" y="155" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">Descarga de Telecargas:</text>
+    <text x="72" y="175" text-anchor="middle" font-size="9" fill="#475569">Archivos SGO / FRF / ODX</text>
+    <text x="72" y="195" text-anchor="middle" font-size="9" fill="#475569">Codificación online SCN</text>
+    <text x="72" y="215" text-anchor="middle" font-size="9" fill="#475569">Protección componentes</text>
+  </g>
+
+  <!-- Cable Ethernet PC a Servidor -->
+  <path d="M 710 240 L 745 240" stroke="#1d4ed8" stroke-width="4"/>
+  <text x="727" y="230" text-anchor="middle" font-size="9" font-weight="700" fill="#1d4ed8">RJ45</text>
+</svg>

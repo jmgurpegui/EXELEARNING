@@ -1,0 +1,127 @@
+<svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <!-- Fondo con rejilla técnica sutil -->
+  <rect width="900" height="500" fill="#f8fafc" rx="12" stroke="#cbd5e1" stroke-width="2"/>
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <rect width="900" height="500" fill="url(#grid)" rx="12"/>
+
+  <!-- Título Superior -->
+  <rect x="30" y="20" width="840" height="42" rx="8" fill="#0f172a"/>
+  <text x="450" y="47" text-anchor="middle" font-size="16" font-weight="700" fill="#f8fafc" letter-spacing="1">ARQUITECTURA INTERNA DEL HARDWARE DE UNA UCE / ECU MOTOR</text>
+
+  <!-- Carcasa de Aluminio (Blindaje) -->
+  <rect x="50" y="80" width="800" height="395" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,4" filter="url(#shadow)"/>
+  <text x="70" y="102" font-size="12" font-weight="700" fill="#64748b">BLINDAJE METÁLICO Y DISIPACIÓN TÉRMICA (CHASIS ECU)</text>
+
+  <!-- Bloque 1: Fuente y Gestión de Energía (PMIC) -->
+  <g transform="translate(75, 125)">
+    <rect width="180" height="200" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="180" height="32" rx="8" fill="#3b82f6"/>
+    <text x="90" y="21" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">GESTIÓN DE POTENCIA</text>
+    
+    <text x="15" y="58" font-size="11" font-weight="700" fill="#1e3a8a">Entrada: +12V / +24V</text>
+    <text x="15" y="74" font-size="10" fill="#475569">Línea 30 (Bat) y 15 (Contacto)</text>
+    <text x="15" y="94" font-size="11" font-weight="700" fill="#dc2626">Diodo Inversión Polaridad</text>
+    <text x="15" y="110" font-size="10" fill="#475569">Supresor picos Transil (TVS)</text>
+    
+    <line x1="15" y1="122" x2="165" y2="122" stroke="#bfdbfe" stroke-width="1.5"/>
+    <text x="15" y="140" font-size="11" font-weight="700" fill="#1e3a8a">Reguladores de Tensión:</text>
+    <text x="15" y="158" font-size="10" fill="#047857">✔ 5.0 V: Sensores motor (TPS, MAP)</text>
+    <text x="15" y="174" font-size="10" fill="#0369a1">✔ 3.3 V: Lógica E/S microprocesador</text>
+    <text x="15" y="190" font-size="10" fill="#6b21a8">✔ 1.2V-1.5V: Core TriCore / MCU</text>
+  </g>
+
+  <!-- Flechas Fuente a Micro y Periféricos -->
+  <path d="M 255 220 L 310 220" stroke="#3b82f6" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="282" y="212" text-anchor="middle" font-size="9" font-weight="700" fill="#3b82f6">Tensiones Vcc</text>
+
+  <!-- Bloque 2: Microcontrolador Central (MCU TriCore) -->
+  <g transform="translate(315, 115)">
+    <rect width="270" height="230" rx="8" fill="#f8fafc" stroke="#0f172a" stroke-width="2.5" filter="url(#shadow)"/>
+    <rect width="270" height="34" rx="8" fill="#0f172a"/>
+    <text x="135" y="23" text-anchor="middle" font-size="13" font-weight="700" fill="#38bdf8">MICROCONTROLADOR (MCU)</text>
+    <text x="135" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Infineon TriCore / NXP MPC / Renesas</text>
+    <text x="135" y="68" text-anchor="middle" font-size="10" fill="#64748b">Arquitectura 32-bit Harvard RISC</text>
+
+    <!-- Sub-bloque FLASH -->
+    <rect x="15" y="82" width="115" height="60" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+    <text x="72" y="101" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">FLASH INTERNA</text>
+    <text x="72" y="117" text-anchor="middle" font-size="9" fill="#78350f">Firmware (OS)</text>
+    <text x="72" y="131" text-anchor="middle" font-size="9" font-weight="700" fill="#b45309">Mapas y Tablas</text>
+
+    <!-- Sub-bloque SRAM -->
+    <rect x="140" y="82" width="115" height="60" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="197" y="101" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">MEMORIA RAM</text>
+    <text x="197" y="117" text-anchor="middle" font-size="9" fill="#475569">Variables volátiles</text>
+    <text x="197" y="131" text-anchor="middle" font-size="9" fill="#475569">Cálculos en vivo</text>
+
+    <!-- Sub-bloque Reloj y Watchdog -->
+    <rect x="15" y="152" width="240" height="65" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="135" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#15803d">PERIFÉRICOS INTEGRADOS</text>
+    <text x="135" y="186" text-anchor="middle" font-size="10" fill="#166534">Conversor ADC 12/10 bits · Módulos PWM de disparo</text>
+    <text x="135" y="202" text-anchor="middle" font-size="10" fill="#166534">Temporizador GPTA / Módulo de Seguridad HSM</text>
+  </g>
+
+  <!-- Bloque 3: Memoria EEPROM Externa -->
+  <g transform="translate(370, 365)">
+    <rect width="160" height="85" rx="6" fill="#fdf2f8" stroke="#db2777" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="80" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#be185d">EEPROM (SPI / I2C)</text>
+    <text x="80" y="36" text-anchor="middle" font-size="10" fill="#9d174d">Chips 95xxx / 24Cxx</text>
+    <text x="80" y="52" text-anchor="middle" font-size="9" fill="#475569">✔ Inmovilizador (IMMO PIN)</text>
+    <text x="80" y="66" text-anchor="middle" font-size="9" fill="#475569">✔ Bastidor VIN y Odómetro</text>
+    <text x="80" y="80" text-anchor="middle" font-size="9" fill="#475569">✔ Codificación Inyectores (IMA)</text>
+  </g>
+  <path d="M 450 345 L 450 365" stroke="#db2777" stroke-width="2" stroke-dasharray="3,2"/>
+
+  <!-- Bloque 4: Transceptores de Bus (CAN / K-Line / LIN) -->
+  <g transform="translate(75, 345)">
+    <rect width="180" height="105" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" filter="url(#shadow)"/>
+    <text x="90" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#6d28d9">TRANSCEPTORES DE RED</text>
+    <text x="90" y="40" text-anchor="middle" font-size="10" font-weight="700" fill="#4c1d95">CAN Transceiver (TJA1040/1050)</text>
+    <text x="90" y="55" text-anchor="middle" font-size="9" fill="#5b21b6">Líneas CAN-H / CAN-L (120Ω fin de línea)</text>
+    <text x="90" y="73" text-anchor="middle" font-size="10" font-weight="700" fill="#4c1d95">K-Line Transceiver (L9637D)</text>
+    <text x="90" y="90" text-anchor="middle" font-size="10" font-weight="700" fill="#4c1d95">LIN Bus Transceiver</text>
+  </g>
+  <path d="M 255 390 L 315 290" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3"/>
+
+  <!-- Bloque 5: Etapas de Potencia (Drivers y Salidas) -->
+  <g transform="translate(635, 125)">
+    <rect width="195" height="235" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="2" filter="url(#shadow)"/>
+    <rect width="195" height="32" rx="8" fill="#ea580c"/>
+    <text x="97" y="21" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">ETAPAS DE POTENCIA</text>
+    
+    <text x="15" y="54" font-size="11" font-weight="700" fill="#9a3412">Drivers de Inyección:</text>
+    <text x="15" y="70" font-size="10" fill="#431407">Mosfets canal N / Smart ICs</text>
+    <text x="15" y="85" font-size="9" fill="#c2410c">Inyección directa (80V-100V Boost)</text>
+    
+    <line x1="15" y1="95" x2="180" y2="95" stroke="#fed7aa" stroke-width="1.5"/>
+    <text x="15" y="112" font-size="11" font-weight="700" fill="#9a3412">Etapa de Encendido (Gasolina):</text>
+    <text x="15" y="128" font-size="10" fill="#431407">Transistores IGBT (clamp 400V)</text>
+    
+    <line x1="15" y1="138" x2="180" y2="138" stroke="#fed7aa" stroke-width="1.5"/>
+    <text x="15" y="155" font-size="11" font-weight="700" fill="#9a3412">Control de Actuadores PWM:</text>
+    <text x="15" y="171" font-size="10" fill="#431407">Válvula Turbo N75, EGR, Mariposa</text>
+    
+    <line x1="15" y1="181" x2="180" y2="181" stroke="#fed7aa" stroke-width="1.5"/>
+    <text x="15" y="198" font-size="11" font-weight="700" fill="#b91c1c">Diodos Flyback / Libre Rueda:</text>
+    <text x="15" y="215" font-size="9" fill="#7f1d1d">Absorción picos autoinducción</text>
+  </g>
+
+  <!-- Flechas Micro a Potencia -->
+  <path d="M 585 220 L 635 220" stroke="#ea580c" stroke-width="3" fill="none"/>
+  <text x="610" y="212" text-anchor="middle" font-size="9" font-weight="700" fill="#ea580c">Señales PWM</text>
+
+  <!-- Salidas hacia el Motor / Conector Exterior -->
+  <path d="M 830 240 L 870 240" stroke="#ea580c" stroke-width="3" stroke-dasharray="3,3"/>
+  <text x="850" y="230" text-anchor="middle" font-size="9" font-weight="700" fill="#ea580c">A Motor</text>
+
+  <!-- Entrada OBD-II / Sensores -->
+  <path d="M 30 395 L 75 395" stroke="#7c3aed" stroke-width="3" stroke-dasharray="3,3"/>
+  <text x="50" y="385" text-anchor="middle" font-size="9" font-weight="700" fill="#7c3aed">OBD-II</text>
+</svg>
