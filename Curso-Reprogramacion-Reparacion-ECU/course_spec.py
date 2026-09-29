@@ -30,11 +30,31 @@ gen_common.PAGES = [
     dict(slug="cuestionario",                         pid="page-08", title="Evaluación Final (Test Aleatorio 20/50)",             nav="Evaluación Final",        icon="activity"),
 ]
 
-def figura(img_file, caption, fig_num=None, prefix="../"):
-    num_str = f'<span class="fig-num">Figura {fig_num}: </span>' if fig_num else ""
+def figura(img_file, caption, prefix="../"):
     return f"""<div class="figura-taller" style="text-align:center;margin:1.6em 0;">
   <img src="{prefix}content/img/{img_file}" alt="{caption}" style="max-width:100%;height:auto;border-radius:8px;border:1px solid #cbd5e1;box-shadow:0 3px 10px rgba(0,0,0,0.06);">
-  <div class="fig-cap" style="font-size:0.88rem;color:#475569;margin-top:0.6em;font-weight:500;line-height:1.4;">{num_str}{caption}</div>
+  <div class="fig-cap" style="font-size:0.88rem;color:#475569;margin-top:0.6em;font-weight:500;line-height:1.4;">{caption}</div>
+</div>"""
+
+def video_local(video_file, title, desc, badge="Vídeo de Taller", badge_color="#047857", poster_img="Centralita_de_Bosch_completa.png", prefix="../"):
+    poster_attr = f' poster="{prefix}content/img/{poster_img}"' if poster_img else ""
+    return f"""<div class="video-card" style="border:1px solid #cbd5e1;border-radius:10px;overflow:hidden;margin:1.6em 0;background:#ffffff;box-shadow:0 3px 10px rgba(0,0,0,0.05);">
+  <div class="video-card-header" style="background:#0f172a;color:#ffffff;padding:0.7em 1.1em;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h4 style="margin:0;color:#ffffff;font-size:0.98rem;font-weight:600;">{title}</h4>
+      <span style="font-size:0.78rem;color:#94a3b8;">Grabación Práctica en Laboratorio de Automoción</span>
+    </div>
+    <span class="video-badge" style="background:{badge_color};color:#ffffff;padding:0.25em 0.7em;border-radius:4px;font-size:0.75rem;font-weight:700;">{badge}</span>
+  </div>
+  <div style="background:#000000;text-align:center;padding:0.6em 0;">
+    <video controls preload="metadata"{poster_attr} style="max-width:100%;max-height:460px;border-radius:6px;outline:none;">
+      <source src="{prefix}content/media/video/{video_file}" type="video/mp4">
+      Tu navegador no soporta el elemento de vídeo HTML5.
+    </video>
+  </div>
+  <div style="padding:0.9em 1.1em;">
+    <p class="video-desc" style="margin:0;font-size:0.92rem;color:#334155;line-height:1.5;">{desc}</p>
+  </div>
 </div>"""
 
 def video_embed(video_id, title, desc, author="Demostración Técnica", badge="Vídeo Técnico", badge_color="#2563eb"):
@@ -97,7 +117,7 @@ BODIES = {}
 # ===============================================================
 BODIES["index"] = r"""
 <div class="curso-banner">
-  <img src="content/img/logo.png" alt="Logo FP Automoción" style="max-height:85px;width:auto;">
+  <img src="content/img/logo2026.png" alt="Logo FP Automoción 2026" style="max-height:95px;width:auto;">
 </div>
 
 <div class="curso-hero">
@@ -181,13 +201,13 @@ BODIES["index"] = r"""
 BODIES["01-arquitectura-hardware-ecu"] = box("1. Anatomía y Blindaje de la Placa PCB Automotriz", "technology", r"""
 <p>Una Unidad de Control Electrónico (UCE / ECU) del motor es un ordenador de grado automotriz diseñado para operar en condiciones extremas de vibración (hasta 30G), humedad y temperatura (-40 °C a +125 °C en vano motor). Su hardware interno se monta sobre una <strong>placa de circuito impreso multicapa (PCB de 4 a 8 capas)</strong> donde las pistas intermedias actúan como planos de masa (<em>ground planes</em>) y apantallamiento contra interferencias electromagnéticas (EMI).</p>
 
-""" + figura("aspecto_diferentes_uce.png", "Tipos y aspectos constructivos de UCEs en automoción: UCE de gestión motor Bosch con conector sellado, UCE antibloqueo ABS/ESP montada sobre bloque hidráulico, caja electrónica de transferencia y módulo de cuadro de instrumentos digital.", 1, prefix="../") + r"""
+""" + figura("aspecto_diferentes_uce.png", "Aspecto constructivo y blindaje de diferentes unidades de control electrónico en el automóvil: UCE de gestión de motor Bosch con conector sellado, UCE antibloqueo ABS/ESP acoplada a bloque hidráulico, caja electrónica de transferencia y módulo de cuadro de instrumentos digital.", prefix="../") + r"""
 
 <p>Para resistir la severa radiación electromagnética producida por el sistema de encendido, bobinas de inyección de alta tensión y motores eléctricos, las centralitas van alojadas en carcasas de fundición de aluminio inyectado dotadas de <strong>apantallamiento Jaula de Faraday</strong>:</p>
 
-""" + figura("jaula_faraday_blindaje_emc.png", "Carcasa metálica de aluminio inyectado con blindaje interno de Jaula de Faraday y junta hermética de estanqueidad para protección contra interferencias electromagnéticas (EMI).", 2, prefix="../") + r"""
+""" + figura("jaula_faraday_blindaje_emc.png", "Carcasa metálica de aluminio inyectado con blindaje interno de Jaula de Faraday y junta hermética de estanqueidad para protección contra interferencias electromagnéticas (EMI).", prefix="../") + r"""
 
-""" + figura("diagrama_arquitectura_ecu.svg", "Arquitectura interna funcional de una centralita electrónica de motor.", 3, prefix="../") + r"""
+""" + figura("diagrama_arquitectura_ecu.svg", "Arquitectura interna funcional de una centralita electrónica de motor.", prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
@@ -218,12 +238,12 @@ BODIES["01-arquitectura-hardware-ecu"] = box("1. Anatomía y Blindaje de la Plac
 """, prefix="../") + box("2. Composición Interna y Ciclo de Ejecución de la UCE", "calculate", r"""
 <p>El funcionamiento de una centralita responde a un ciclo continuo de adquisición, procesamiento y actuación en tiempo real:</p>
 
-""" + figura("figura_composicion_uce.png", "Composición funcional del sistema microprocesador de la UCE: acondicionamiento de entradas analógicas/digitales con convertidor A/D, microprocesador (Unidad de Control y Unidad Aritmético-Lógica UAL), buses de control/direcciones/datos, memorias RAM/ROM/EEPROM, convertidor D/A y etapas finales de potencia hacia los actuadores.", 4, prefix="../") + r"""
+""" + figura("esquema_composicion_uce.png", "Composición funcional del sistema microprocesador de la UCE: acondicionamiento de entradas analógicas/digitales con convertidor A/D, microprocesador (Unidad de Control y Unidad Aritmético-Lógica UAL), buses de control/direcciones/datos, memorias RAM/ROM/EEPROM, convertidor D/A y etapas finales de potencia hacia los actuadores.", prefix="../") + r"""
 
 <h4>El Reloj Maestro y la Sincronización Temporal</h4>
 <p>Todos los cálculos del microprocesador están sincronizados por una señal de reloj de onda cuadrada generada por un <strong>oscilador de cristal de cuarzo piezoeléctrico</strong>. La frecuencia de este cristal determina la velocidad de cálculo del procesador:</p>
 
-""" + figura("foto_cristal_cuarzo_reloj.png", "Circuito oscilador de reloj maestro gobernado por cristal de cuarzo piezoeléctrico de 21.000 MHz (OSC1) con condensadores y resistencias de ajuste de compensación de fase.", 5, prefix="../") + r"""
+""" + figura("foto_cristal_cuarzo_reloj.png", "Circuito oscilador de reloj maestro gobernado por cristal de cuarzo piezoeléctrico de 21.000 MHz (OSC1) con condensadores y resistencias de ajuste de compensación de fase.", prefix="../") + r"""
 
 <div class="callout aviso">
   <span class="cap">Verificación con Osciloscopio en Taller</span>
@@ -233,13 +253,13 @@ BODIES["01-arquitectura-hardware-ecu"] = box("1. Anatomía y Blindaje de la Plac
 <h4>Arquitecturas de Alta Fiabilidad: Redundancia y Multiprocesador</h4>
 <p>En aplicaciones diésel de alta exigencia e inyección directa, los fabricantes han recurrido a arquitecturas multiprocesador donde varios microcontroladores cooperan en la misma placa, supervisándose mutuamente a través del bus interno:</p>
 
-""" + figura("placa_uce_opel_triple_micro.png", "Arquitectura de alta fiabilidad en placa PCB: UCE diésel Opel Omega con disposición redundante de triple microordenador y osciladores de cuarzo independientes para control de inyección y supervisión de seguridad.", 6, prefix="../") + r"""
+""" + figura("placa_uce_opel_triple_micro.png", "Arquitectura de alta fiabilidad en placa PCB: UCE diésel Opel Omega con disposición redundante de triple microordenador y osciladores de cuarzo independientes para control de inyección y supervisión de seguridad.", prefix="../") + r"""
 """, prefix="../") + box("3. Mapa de Memoria: RAM, ROM, Flash y EEPROM", "roadmap", r"""
 <p>En el hardware de una centralita conviven cuatro tecnologías de memoria distintas, cada una con una misión específica:</p>
 
-""" + figura("estructura_matriz_ram.png", "Estructura interna de la matriz de memoria de lectura/escritura RAM: celdas dinámicas formadas por transistor MOS de conmutación y condensador de almacenamiento de carga por celda binaria.", 7, prefix="../") + r"""
+""" + figura("estructura_matriz_ram.png", "Estructura interna de la matriz de memoria de lectura/escritura RAM: celdas dinámicas formadas por transistor MOS de conmutación y condensador de almacenamiento de carga por celda binaria.", prefix="../") + r"""
 
-""" + figura("estructura_matriz_rom.png", "Estructura interna de una matriz de memoria de solo lectura ROM: matriz cruzada de líneas de dirección y columnas de datos interconectadas por diodos semiconductores permanentes.", 8, prefix="../") + r"""
+""" + figura("estructura_matriz_rom.png", "Estructura interna de una matriz de memoria de solo lectura ROM: matriz cruzada de líneas de dirección y columnas de datos interconectadas por diodos semiconductores permanentes.", prefix="../") + r"""
 
 <table class="tabla-curso">
   <thead>
@@ -286,9 +306,9 @@ BODIES["01-arquitectura-hardware-ecu"] = box("1. Anatomía y Blindaje de la Plac
 BODIES["02-metodos-lectura-escritura"] = box("1. Panorama General de Métodos de Acceso a la Memoria", "calculate", r"""
 <p>Para leer el archivo original de una ECU o escribir una nueva calibración modificada, el electromecánico dispone de <strong>cuatro métodos de trabajo</strong> con niveles crecientes de invasividad y seguridad:</p>
 
-""" + figura("diagrama_metodos_lectura.svg", "Árbol de decisión para seleccionar el método de lectura y escritura según el nivel de acceso y protección antituning.", 9, prefix="../") + r"""
+""" + figura("diagrama_metodos_lectura.svg", "Árbol de decisión para seleccionar el método de lectura y escritura según el nivel de acceso y protección antituning.", prefix="../") + r"""
 
-""" + figura("herramientas_lectura_kess3_flex.png", "Equipamiento profesional de lectura y programación automotriz: Alientech KESS3, Magicmotorsport FLEX, Autotuner, caja Bench Box con adaptadores GPT/Tricore, New Genius y sondas de agujas pogo para marco de posicionamiento BDM.", 10, prefix="../") + r"""
+""" + figura("herramientas_lectura_kess3_flex.png", "Equipamiento profesional de lectura y programación automotriz: Alientech KESS3, Magicmotorsport FLEX, Autotuner, caja Bench Box con adaptadores GPT/Tricore, New Genius y sondas de agujas pogo para marco de posicionamiento BDM.", prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
@@ -319,17 +339,17 @@ BODIES["02-metodos-lectura-escritura"] = box("1. Panorama General de Métodos de
 """, prefix="../") + box("2. Lectura y Diagnóstico por Puerto Serie EOBD / OBD-II", "technology", r"""
 <p>El estándar OBD-II utiliza protocolos de comunicación serie para transferir datos entre la interfaz de diagnosis y la centralita. Antes de intentar cualquier lectura de mapas, es imprescindible realizar una sesión de identificación del software:</p>
 
-""" + figura("identificacion_ecu_diagnosis_edc15.png", "Identificación técnica de UCE por toma OBD-II: lectura de referencia de hardware/software Bosch 038 906 012 EM, familia EDC 15V y codificación de variantes en Seat Ibiza 1.9 SDI.", 11, prefix="../") + r"""
+""" + figura("identificacion_ecu_diagnosis_edc15.png", "Identificación técnica de UCE por toma OBD-II: lectura de referencia de hardware/software Bosch 038 906 012 EM, familia EDC 15V y codificación de variantes en Seat Ibiza 1.9 SDI.", prefix="../") + r"""
 
 <p>Una vez identificada la referencia exacta del hardware y la versión del software, el equipo de flasheo inicia la sesión de transferencia de datos descargando la memoria Flash:</p>
 
-""" + figura("lectura_obd2_eobd1250.png", "Secuencia de comunicación serie para identificación de software y lectura completa de volcado Flash por toma de diagnosis EOBD2 1250 de FG Technology.", 12, prefix="../") + r"""
+""" + figura("lectura_obd2_eobd1250.png", "Secuencia de comunicación serie para identificación de software y lectura completa de volcado Flash por toma de diagnosis EOBD2 1250 de FG Technology.", prefix="../") + r"""
 
 <div class="callout alerta">
   <span class="cap">Regla de Oro en Lectura y Flasheo por OBD-II</span>
   <p>Durante la lectura o escritura por OBD-II, el electroventilador del motor puede activarse a máxima velocidad por protocolo de seguridad de la ECU, provocando una caída drástica de tensión. Es <strong>estrictamente obligatorio conectar un estabilizador de taller de 70 A a 100 A</strong> que mantenga la batería entre 13,8 V y 14,4 V constantes durante todo el proceso. Una caída por debajo de 12,0 V durante la fase de borrado del sector dejará la centralita completamente bloqueada (<em>bricked</em>).</p>
 </div>
-""", prefix="../") + box("3. Bench Mode (GPT), Bootloader Tricore y Programadores Universales", "experiment", r"""
+""", prefix="../") + box("3. Bench Mode (GPT), Volcado EEPROM y Programadores Universales", "experiment", r"""
 <p>Cuando una centralita incorpora protección <strong>antituning (TPROT)</strong> a nivel de procesador, el puerto OBD bloquea las solicitudes de flasheo no autorizadas. En este escenario, el método preferente en el taller es el <strong>Modo Banco (Bench Mode)</strong> con sincronización por pines GPT (<em>General Purpose Timer</em>):</p>
 
 <ul class="ra-list">
@@ -337,10 +357,15 @@ BODIES["02-metodos-lectura-escritura"] = box("1. Panorama General de Métodos de
   <li><strong>Extracción Full Backup:</strong> Bench Mode permite leer de forma íntegra la memoria Flash interna (Micro Flash), la Flash externa (si existe) y la memoria EEPROM física o emulada, permitiendo la clonación perfecta 1:1 de la ECU.</li>
 </ul>
 
+<h4>Estructura de Datos en Memoria EEPROM</h4>
+<p>El volcado hexadecimal de la memoria EEPROM contiene la información crítica de seguridad y configuración del vehículo:</p>
+
+""" + figura("Visualizacion_valores_almacenados_EEPROM.png", "Estructura hexadecimal de datos almacenados en memoria serie EEPROM: volcado binario con la localización de códigos de seguridad (PIN de inmovilizador), número de bastidor (VIN) y datos de odómetro.", prefix="../") + r"""
+
 <h4>Programación Directa de Memorias con Estación Dataman 48Pro2</h4>
 <p>En casos de recuperación de módulos dañados por agua, sobretensión o clonaciones complejas donde el procesador central ha quedado inoperativo, la lectura física del chip de memoria EEPROM o Flash es el único camino viable:</p>
 
-""" + figura("lectura_eeprom_clip_dataman48pro2.png", "Estaciones de lectura y programación de memorias: (a) Pinza SOIC-8 clip pogo de lectura rápida sobre placa sin desoldar, (b) Zócalo de inserción nula (ZIF) de programador BeeProg2, (c) Estación universal de programación Dataman 48Pro2 (www.dataman.com) con zócalo ZIF de 48 pines y conectores ISP para lectura de EEPROM y Flash de automoción.", 13, prefix="../") + r"""
+""" + figura("lectura_eeprom_clip_dataman48pro2.png", "Estaciones de lectura y programación de memorias: pinza SOIC-8 clip pogo de lectura rápida sobre placa sin desoldar, zócalo de inserción nula (ZIF) de programador BeeProg2, y estación universal de programación Dataman 48Pro2 (www.dataman.com) con conectores ISP para lectura de EEPROM y Flash de automoción.", prefix="../") + r"""
 
 <div class="callout nota">
   <span class="cap">Ventajas Técnicas del Programador Dataman 48Pro2 (www.dataman.com)</span>
@@ -355,16 +380,16 @@ BODIES["02-metodos-lectura-escritura"] = box("1. Panorama General de Métodos de
 BODIES["03-modificacion-mapas-checksum"] = box("1. Cartografía Motor: Organización y Localización en Memoria Flash", "roadmap", r"""
 <p>El archivo binario (volcado crudo .bin u .ori) extraído de la memoria Flash contiene dos partes fundamentales: el <strong>código ejecutable del sistema operativo del motor</strong> y el <strong>bloque de calibración (datos de mapas)</strong>. Los mapas son matrices matemáticas de consulta (<em>lookup tables</em>) que relacionan las variables de entrada con las decisiones de control del actuador:</p>
 
-""" + figura("diagrama_mapa_3d_inyeccion.svg", "Estructura matemática tridimensional de un mapa de inyección en función del régimen de giro (RPM) y la carga del motor.", 14, prefix="../") + r"""
+""" + figura("diagrama_mapa_3d_inyeccion.svg", "Estructura matemática tridimensional de un mapa de inyección en función del régimen de giro (RPM) y la carga del motor.", prefix="../") + r"""
 
 <p>Para localizar, visualizar y modificar estos mapas en un archivo binario, el software estándar por excelencia en la industria automotriz mundial es <strong>EVC WinOLS</strong> (<a href="https://www.evc.de/" target="_blank" rel="noopener">www.evc.de</a>):</p>
 
-""" + figura("winols_visualizacion_hex_2d_3d.png", "Entorno de ingeniería de calibración EVC WinOLS (www.evc.de): visualización sincronizada en volcado hexadecimal/decimal crudo, modo gráfico lineal 2D y representación de superficie tridimensional 3D con reconocimiento de ejes.", 15, prefix="../") + r"""
+""" + figura("winols_visualizacion_hex_2d_3d.png", "Entorno de ingeniería de calibración EVC WinOLS (www.evc.de): visualización sincronizada en volcado hexadecimal/decimal crudo, modo gráfico lineal 2D y representación de superficie tridimensional 3D con reconocimiento de ejes.", prefix="../") + r"""
 
 <h4>El Mosaico de Mapas Principales en una Centralita Diésel / Gasolina</h4>
 <p>Una calibración profesional requiere entender la interdependencia entre los distintos mapas de gestión de par y alimentación:</p>
 
-""" + figura("coleccion_mapas_3d_winols.png", "Mosaico de mapas tridimensionales característicos en EVC WinOLS: mapa de límite de par, inyección básica de arranque, presión de raíl Common Rail, avance de inyección/encendido, presión absoluta de turbo y mapa de humos/factor lambda.", 16, prefix="../") + r"""
+""" + figura("coleccion_mapas_3d_winols.png", "Mosaico de mapas tridimensionales característicos en EVC WinOLS: mapa de límite de par, inyección básica de arranque, presión de raíl Common Rail, avance de inyección/encendido, presión absoluta de turbo y mapa de humos/factor lambda.", prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
@@ -396,7 +421,7 @@ BODIES["03-modificacion-mapas-checksum"] = box("1. Cartografía Motor: Organizac
 <h4>Detalle de Curva 2D: Limitador de Par Motor</h4>
 <p>La vista bidimensional lineal en WinOLS permite comprobar con precisión micrométrica la forma de la curva y verificar que no existan discontinuidades abruptas que generen tirones o sobrepresiones destructivas:</p>
 
-""" + figura("winols_curva_2d_limite_par.png", "Curva analítica 2D en WinOLS del mapa limitador de par motor en función del régimen de giro (RPM) y límite térmico de caudal.", 17, prefix="../") + r"""
+""" + figura("winols_curva_2d_limite_par.png", "Curva analítica 2D en WinOLS del mapa limitador de par motor en función del régimen de giro (RPM) y límite térmico de caudal.", prefix="../") + r"""
 """, prefix="../") + box("2. El Algoritmo Checksum (Suma de Verificación) y Bloqueo Antituning", "calculate", r"""
 <p>El <strong>Checksum</strong> es un valor matemático de control criptográfico calculado a partir de la suma ponderada de todos los bytes contenidos en los bloques de memoria Flash. Su finalidad principal en la automoción es garantizar la <strong>integridad de los datos</strong> contra ruidos electromagnéticos o corrupciones en memoria.</p>
 
@@ -414,7 +439,7 @@ BODIES["03-modificacion-mapas-checksum"] = box("1. Cartografía Motor: Organizac
 """, prefix="../") + box("3. Recursos de Calibración: EVC Electronic y Dataman Programmers", "objectives", r"""
 <p>El trabajo riguroso en ingeniería de centralitas requiere apoyarse en las herramientas estándar del sector y en la documentación técnica oficial:</p>
 
-""" + figura("enlaces_web_evc_dataman_qr.png", "Accesos directos y códigos QR a los portales tecnológicos de referencia: EVC Electronic (www.evc.de) para software WinOLS, módulos de Checksum y bases de datos Damos, y Dataman Programmers (www.dataman.com) para estaciones universales de hardware y adaptadores de zócalo.", 18, prefix="../") + r"""
+""" + figura("enlaces_web_evc_dataman_qr.png", "Accesos directos y códigos QR a los portales tecnológicos de referencia: EVC Electronic (www.evc.de) para software WinOLS, módulos de Checksum y bases de datos Damos, y Dataman Programmers (www.dataman.com) para estaciones universales de hardware y adaptadores de zócalo.", prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
@@ -469,16 +494,21 @@ BODIES["04-diagnostico-reparacion-hardware"] = box("1. Equipamiento del Puesto d
 <h4>Anatomía Clásica de Centralitas Bosch con Memoria EPROM UV</h4>
 <p>El conocimiento de la evolución de las centralitas permite entender la disposición de los buses de datos y las etapas de potencia desde las primeras inyecciones electrónicas hasta los sistemas modernos:</p>
 
-""" + figura("despiece_centralita_bosch_eprom_uv.png", "Despiece y anatomía constructiva de centralita Bosch clásica: encapsulado de memoria EPROM con ventana de cuarzo para borrado por luz ultravioleta (UV), búferes de interfaz de bus de datos y microprocesador central.", 19, prefix="../") + r"""
+""" + figura("despiece_centralita_bosch_eprom_uv.png", "Despiece y anatomía constructiva de centralita Bosch clásica: encapsulado de memoria EPROM con ventana de cuarzo para borrado por luz ultravioleta (UV), búferes de interfaz de bus de datos y microprocesador central.", prefix="../") + r"""
 """, prefix="../") + box("2. Diagnóstico y Reparación de las Averías Más Frecuentes en Placa", "case", r"""
 <p>En el taller de automoción, más del 80% de los fallos de hardware en UCEs se concentran en 5 patrones de avería perfectamente diagnosticables:</p>
 
-""" + figura("diagrama_circuito_reparacion_5v.svg", "Esquema del circuito regulador de 5V de sensores y protocolo de comprobación en banco ante cortocircuitos externos.", 20, prefix="../") + r"""
+""" + figura("diagrama_circuito_reparacion_5v.svg", "Esquema del circuito regulador de 5V de sensores y protocolo de comprobación en banco ante cortocircuitos externos.", prefix="../") + r"""
+
+<h4>Diagnóstico Previo de Averías Registradas (DTC)</h4>
+<p>Antes de abrir la carcasa, la lectura de los códigos de avería almacenados en la memoria DTC orienta directamente hacia la etapa de potencia o línea de alimentación afectada:</p>
+
+""" + figura("Averias_del_sistema_pantalla_SPC.png", "Diagnóstico de averías registradas en la memoria DTC de la UCE mediante terminal SPC: lectura de códigos de fallo de sensores y actuadores para diagnóstico previo antes de la intervención de hardware.", prefix="../") + r"""
 
 <h4>Inspección a Doble Cara en Placas Bosch</h4>
 <p>Las placas de centralitas modernas montan componentes en ambas caras para maximizar la densidad de integración y disipar el calor hacia el chasis metálico:</p>
 
-""" + figura("placa_uce_bosch_ambas_caras.png", "Inspección y diagnóstico a doble cara de placa PCB Bosch: cara superior con microcontrolador, oscilador de cuarzo y transistores MOSFET de potencia; cara inferior con memoria serie EEPROM SOIC-8 y condensadores de desacoplo SMD.", 21, prefix="../") + r"""
+""" + figura("placa_uce_bosch_ambas_caras.png", "Inspección y diagnóstico a doble cara de placa PCB Bosch: cara superior con microcontrolador, oscilador de cuarzo y transistores MOSFET de potencia; cara inferior con memoria serie EEPROM SOIC-8 y condensadores de desacoplo SMD.", prefix="../") + r"""
 
 <h4>Protocolo de Reparación de las 5 Averías Frecuentes</h4>
 <table class="tabla-curso">
@@ -520,17 +550,17 @@ BODIES["04-diagnostico-reparacion-hardware"] = box("1. Equipamiento del Puesto d
 """, prefix="../") + box("3. Sistemas Inmovilizadores, Clonación y Desinmovilización (Immo-Off)", "technology", r"""
 <p>El sistema inmovilizador electrónico impide el arranque no autorizado del vehículo mediante un intercambio criptográfico entre la llave del conductor y la centralita motor:</p>
 
-""" + figura("sistema_inmovilizador_citroen.png", "Esquema general del sistema inmovilizador de automoción: llave con transponder de radiofrecuencia (RFID), bobina antena en bombín de contacto, UCE de gestión motor / módulo inmovilizador y electroválvula o relé de corte de inyección.", 22, prefix="../") + r"""
+""" + figura("sistema_inmovilizador_citroen.png", "Esquema general del sistema inmovilizador de automoción: llave con transponder de radiofrecuencia (RFID), bobina antena en bombín de contacto, UCE de gestión motor / módulo inmovilizador y electroválvula o relé de corte de inyección.", prefix="../") + r"""
 
 <h4>Identificación de la Memoria EEPROM del Inmovilizador</h4>
 <p>En muchas centralitas de inyección de gasolina y diésel, los datos del inmovilizador no residen en la Flash del procesador, sino en un chip EEPROM serie independiente de 8 patillas:</p>
 
-""" + figura("placa_uce_gasolina_eeprom_inmo.png", "Placa de circuito de UCE de gasolina: diferenciación física entre la memoria de gestión de motor y la memoria EEPROM de 8 pines dedicada a los códigos del sistema inmovilizador.", 23, prefix="../") + r"""
+""" + figura("placa_uce_gasolina_eeprom_inmo.png", "Placa de circuito de UCE de gasolina: diferenciación física entre la memoria de gestión de motor y la memoria EEPROM de 8 pines dedicada a los códigos del sistema inmovilizador.", prefix="../") + r"""
 
 <h4>Comparativa con Módulos de Seguridad y Airbag</h4>
 <p>El tratamiento de memorias en centralitas de seguridad pasiva (Airbag) comparte metodología con las UCE de motor, requiriendo la lectura de EEPROM para el borrado de datos de impacto (<em>crash data clear</em>):</p>
 
-""" + figura("placas_uce_airbag_y_nissan.png", "Disposición de módulos auxiliares y de seguridad: placa de UCE de airbag con condensadores electrolíticos de reserva de energía para disparo pirotécnico y acelerómetro de impacto, junto a placa de UCE de gestión de motor Nissan.", 24, prefix="../") + r"""
+""" + figura("placas_uce_airbag_y_nissan.png", "Disposición de módulos auxiliares y de seguridad: placa de UCE de airbag con condensadores electrolíticos de reserva de energía para disparo pirotécnico y acelerómetro de impacto, junto a placa de UCE de gestión de motor Nissan.", prefix="../") + r"""
 """, prefix="../") + nav_block("04-diagnostico-reparacion-hardware")
 
 
@@ -557,7 +587,7 @@ BODIES["05-normativa-pass-thru-j2534"] = box("1. Normativa Europea y el Protocol
   </div>
 </div>
 
-""" + figura("diagrama_instalacion_passthru.svg", "Esquema de conexión para reprogramación Pass-Thru en taller con estabilizador de tensión y portal oficial OEM.", 25, prefix="../") + r"""
+""" + figura("diagrama_instalacion_passthru.svg", "Esquema de conexión para reprogramación Pass-Thru en taller con estabilizador de tensión y portal oficial OEM.", prefix="../") + r"""
 
 <h4>Condiciones Obligatorias de Taller para Telecarga Pass-Thru</h4>
 <ul class="ra-list">
@@ -574,6 +604,9 @@ BODIES["05-normativa-pass-thru-j2534"] = box("1. Normativa Europea y el Protocol
 # ===============================================================
 BODIES["06-casos-practicos-taller"] = box("1. Caso Práctico 1: Clonación de ECU Bosch EDC17C64 en Banco (Bench Mode)", "case", r"""
 <h4>Vehículo: Volkswagen Golf VII 2.0 TDI (Centralita quemada por cortocircuito externo)</h4>
+
+""" + video_local("Reparacion_y_Clonado_de_ECU.mp4", "Vídeo Demostrativo: Procedimiento Práctico de Reparación y Clonado en Laboratorio", "Demostración técnica del proceso de comprobación de señales en banco, apertura de la carcasa de aluminio, volcado de memoria Flash/EEPROM y comprobación de consumo antes y después de la sustitución del módulo.", prefix="../") + r"""
+
 <ol class="pasos-taller">
   <li><strong>Fase 1: Conexión en Banco sin abrir la carcasa.</strong> Identificar el pinout del conector exterior de la ECU EDC17C64 en el software de la herramienta (FLEX o KESS3). Conectar alimentación (+12V permanente, +12V bajo contacto KL15, masa GND), línea CAN-High (pin 67), línea CAN-Low (pin 68) y los dos canales de sincronización GPT (GPT1 y GPT2).</li>
   <li><strong>Fase 2: Lectura del Backup Completo de la ECU Original.</strong> Alimentar a 13,5 V y ejecutar la lectura en Modo Bench. El software sincroniza las frecuencias GPT y descarga tres archivos: Micro Flash interna (TC1797, 4 MB), Flash externa (si existe) y memoria EEPROM (donde residen los datos del inmovilizador, bastidor y codificación).</li>
@@ -589,14 +622,18 @@ BODIES["06-casos-practicos-taller"] = box("1. Caso Práctico 1: Clonación de EC
   <li><strong>Procedimiento de Rework SMD:</strong> Aplicar flux en pasta en las patillas del integrado. Con la tobera circular de aire caliente a 360 °C y caudal medio, calentar de forma homogénea durante 35 segundos hasta la fusión del estaño. Retirar con pinzas de vacío.</li>
   <li><strong>Limpieza y Montaje:</strong> Limpiar los pads con malla de desoldar y alcohol isopropílico. Posicionar el chip regulador nuevo (recambio original), aplicar flux líquido y soldar patilla a patilla con soldador de punta fina a 340 °C. Verificar la impedancia de salida (> 10 kΩ) y alimentar: la línea entrega 5,02 V estables.</li>
 </ol>
+
+""" + figura("Formacion_en_reparacion_de_centralitas.png", "Itinerario formativo y mapa de competencias profesionales en reparación, reprogramación y clonado de centralitas electrónicas de automoción.", prefix="../") + r"""
 """, prefix="../") + nav_block("06-casos-practicos-taller")
 
 
 # ===============================================================
 # TEMA 7: MEDIATECA TÉCNICA: RECURSOS AUDIOVISUALES
 # ===============================================================
-BODIES["07-mediateca-tecnica"] = box("1. Demostraciones Prácticas de Taller en Vídeo (YouTube Verificados)", "video", r"""
-<p>Selección de recursos audiovisuales técnicos y demostraciones verificadas en laboratorio automotriz para afianzar los procedimientos de programación y reparación:</p>
+BODIES["07-mediateca-tecnica"] = box("1. Grabación Práctica en Laboratorio y Demostraciones en Vídeo", "video", r"""
+<p>Recursos audiovisuales técnicos, incluyendo la grabación práctica de taller de reparación y clonado en banco, junto a demostraciones internacionales de laboratorio:</p>
+
+""" + video_local("Reparacion_y_Clonado_de_ECU.mp4", "Vídeo de Taller: Reparación y Clonado de ECU en Banco de Pruebas", "Grabación integral de procedimiento práctico en laboratorio de automoción: diagnóstico de consumo en fuente regulada, apertura controlada de carcasa sellada Bosch, soldadura y conexión de puntos Boot/Bench, volcado completo de memorias Flash/EEPROM y comprobación final.", badge="Taller Local HD", prefix="../") + r"""
 
 """ + video_embed("en3G5PQPeXc", "Lectura y Escritura de ECU en Banco (Bench Mode) con Alientech KESS3", "Demostración práctica paso a paso del conexionado de pines de alimentación (+12V, GND), línea de comunicación CAN High/Low y pines de sincronización GPT en una centralita Bosch EDC17CP44 sin necesidad de abrir la carcasa de aluminio.", "ReproRACE - Formación Técnica", "Demostración Bench", "#2563eb") + r"""
 
@@ -664,7 +701,7 @@ BODIES["07-mediateca-tecnica"] = box("1. Demostraciones Prácticas de Taller en 
 """, prefix="../") + box("3. Centros de Referencia Oficiales y Enlaces a Portales Industriales", "roadmap", r"""
 <p>Consulte las herramientas, documentación y especificaciones oficiales en los portales de referencia del sector:</p>
 
-""" + figura("enlaces_web_evc_dataman_qr.png", "Accesos directos y códigos QR a los portales tecnológicos de referencia: EVC Electronic (www.evc.de) para software WinOLS, módulos de Checksum y bases de datos Damos, y Dataman Programmers (www.dataman.com) para estaciones universales de hardware y adaptadores de zócalo.", 26, prefix="../") + r"""
+""" + figura("enlaces_web_evc_dataman_qr.png", "Accesos directos y códigos QR a los portales tecnológicos de referencia: EVC Electronic (www.evc.de) para software WinOLS, módulos de Checksum y bases de datos Damos, y Dataman Programmers (www.dataman.com) para estaciones universales de hardware y adaptadores de zócalo.", prefix="../") + r"""
 
 <div class="mag-grid">
   <div class="mag-card">
