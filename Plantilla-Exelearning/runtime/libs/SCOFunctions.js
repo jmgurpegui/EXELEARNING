@@ -75,10 +75,12 @@ function loadPage() {
   var result = scorm.init();
   var status = scorm.GetCompletionStatus();
 
-  if (status == "not attempted" || status == "incomplete") {
-    // the student is now attempting the lesson
-    scorm.SetCompletionStatus("unknown");
-    scorm.SetSuccessStatus("unknown")
+  // FIX SCORM 1.2 / Moodle (EducaMadrid):
+  // En SCORM 1.2 el estado "unknown" no existe y forzaba el estado a "not attempted".
+  // Al entrar, si aún no se ha intentado, se marca como "incomplete" para registrar intento activo.
+  if (status == "not attempted" || status == "unknown" || status == "" || status == "null" || !status) {
+    scorm.SetCompletionStatus("incomplete");
+    scorm.save();
   }
 
   exitPageStatus = false;

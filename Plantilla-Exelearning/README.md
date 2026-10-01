@@ -1,6 +1,19 @@
-# Plantilla eXeLearning (SCORM 1.2)
+# Plantilla eXeLearning 2026 (SCORM 1.2 / REA)
 
-Plantilla optimizada para generar paquetes de formación interactiva en formato **SCORM 1.2**, compatibles al 100% con **eXeLearning** y aceptados directamente por el **Aula Virtual de EducaMadrid y plataformas Moodle**, incorporando todas las firmas de autenticidad exigidas (`content.xml`, `content.dtd`, `imslrm.xml`, `imsmanifest.xml`).
+Plantilla oficial optimizada para generar paquetes de formación interactiva en formato **SCORM 1.2**, compatibles al 100% con **eXeLearning v4.0.1 (versión 2026)** y aceptados directamente por el **Aula Virtual de EducaMadrid y plataformas Moodle**, incorporando todas las firmas de autenticidad exigidas (`content.xml`, `content.dtd`, `imslrm.xml`, `imsmanifest.xml`).
+
+---
+
+## 🚀 Novedades y Mejoras eXeLearning 2026
+
+La plantilla ha sido completamente actualizada con el motor y componentes de **eXeLearning 2026 (v4.0.1)**:
+- **Nuevo Tema Visual "Zen"**: Sustituye al tema clásico por el diseño oficial más moderno, limpio y equilibrado.
+- **Tipografía "Inter" Integrada**: Tipografía nativa offline (`theme/fonts/`) de gran legibilidad técnica en pantallas y dispositivos móviles.
+- **50 Iconos Vectoriales SVG**: Gráficos nítidos a cualquier resolución y densidad de pantalla (`theme/icons/*.svg`), eliminando el pixelado de los antiguos PNG.
+- **Barra de Accesibilidad REA (`exe_atools`)**: Soporte nativo para ajuste de contraste, tamaño de texto y tipografías para dislexia (*OpenDyslexic*).
+- **Suite Ampliada de iDevices**: Incluye *text*, *form*, *download-source-file*, *slide*, *trueorfalse*, *quick-questions*, *guess*, *az-quiz-game* y *adaptative-quiz*.
+- **Cierre Seguro SCORM y Prevención de Pérdida de Notas**: Botón de confirmación y guardado oficial en el LMS (`LMSCommit` + `LMSFinish`), blindado contra cierres involuntarios de pestaña.
+- **Corrección de Bug Histórico de Estado ("No intentado")**: Eliminado el valor incompatible `"unknown"` en SCORM 1.2 que provocaba que alumnos figuraran como *"no intentado"* tras cursar el módulo.
 
 ---
 
@@ -24,11 +37,12 @@ python3 build.py
 ```
 *(También puedes compilar desde fuera pasando la ruta: `python3 Plantilla-Exelearning/build.py MiNuevoCurso`)*
 
-    1. Monta el runtime eXe y recursos multimedia en `pkg/`.
-    2. Genera los archivos HTML y las firmas de autenticidad (`content.xml`, `imslrm.xml`, `imsmanifest.xml`).
-    3. Valida la sintaxis XML, la conformidad estricta contra `content.dtd` y la consistencia disco <-> manifiesto (0 errores).
-    4. Genera el entregable comprimido **`<Nombre_del_Curso>_SCORM.zip`** listo para subir a Moodle / EducaMadrid.
-    5. Deposita y sincroniza automáticamente el paquete en la carpeta correspondiente de **Google Drive** y en el repositorio local de cursos.
+El compilador realiza automáticamente:
+1. Monta el runtime eXe 2026 y recursos multimedia en `pkg/`.
+2. Genera los archivos HTML y las firmas de autenticidad (`content.xml`, `imslrm.xml`, `imsmanifest.xml`).
+3. Valida la sintaxis XML, la conformidad estricta contra `content.dtd` y la consistencia disco <-> manifiesto (0 errores).
+4. Genera el entregable comprimido **`<Nombre_del_Curso>_SCORM.zip`** listo para subir a Moodle / EducaMadrid.
+5. Deposita y sincroniza automáticamente el paquete en la carpeta correspondiente de **Google Drive** y en el repositorio local de cursos.
 
 ---
 
@@ -36,9 +50,9 @@ python3 build.py
 
 ```
 Plantilla-Exelearning/
-├── README.md                      # Esta guía simplificada y optimizada
+├── README.md                      # Esta guía técnica completa y documentación de soporte
 ├── course_spec.py                 # Especificación del curso (título, páginas, HTML, test y Google Drive)
-├── quiz_engine.html               # Motor JavaScript de autoevaluación con reporte SCORM
+├── quiz_engine.html               # Motor JavaScript de autoevaluación con reporte SCORM y guardado seguro
 ├── Ficha_de_encargo_del_curso.docx # Ficha editable para toma de requerimientos
 ├── media/                         # Recursos propios aportados por el autor
 │   ├── img/                       # Imágenes (PNG, JPG, SVG, WebP)
@@ -47,10 +61,10 @@ Plantilla-Exelearning/
 │   └── audio/                     # Audios (MP3, OGG)
 ├── build.py                       # Compilador, validador y empaquetador automático
 ├── core/                          # Motor interno de generación
-│   ├── gen_common.py              # Funciones auxiliares de maquetación HTML y navegación
-│   ├── gen_content_xml.py         # Generador de firmas eXeLearning y metadatos LOM-ES
+│   ├── gen_common.py              # Funciones de maquetación HTML, cabeceras 2026 y navegación
+│   ├── gen_content_xml.py         # Generador de firmas eXeLearning v4.0.1 y metadatos LOM-ES
 │   └── gdrive_export.py           # Conector de sincronización con Google Drive (Desktop y API)
-└── runtime/                       # Runtime validado de eXeLearning (librerías, tema, MathJax, DTD)
+└── runtime/                       # Runtime validado de eXeLearning 2026 (Zen, librerías, MathJax, DTD)
 ```
 
 ---
@@ -58,7 +72,7 @@ Plantilla-Exelearning/
 ## 🛠️ Maquetación y Componentes (`course_spec.py`)
 
 ### Bloques de Contenido (`box`)
-Para añadir cajas de contenido atractivas con iconos de eXeLearning:
+Para añadir cajas de contenido atractivas con iconos vectoriales SVG de eXeLearning 2026:
 ```python
 from gen_common import box, nav_block
 
@@ -75,17 +89,8 @@ BODIES["mi-tema"] = box("1. Fundamentos Técnicos", "book", r"""
 # En la portada (index): usar prefix=""
 ```
 
-### Referencia de Rutas a Imágenes
-- En la portada (`index.html`): `<img src="content/img/mi_imagen.png" alt="...">`
-- En páginas interiores (`html/tema.html`): `<img src="../content/img/mi_imagen.png" alt="...">`
-
-### Fórmulas Matemáticas (MathJax local)
-Funciona 100% offline sin dependencias externas:
-- En línea: `\( V = I \cdot R \)`
-- En bloque: `\[ P = \frac{V^2}{R} \]`
-
-### Iconos Disponibles (`theme/icons/`)
-`activity`, `agreement`, `alert`, `arts`, `ask`, `book`, `calculate`, `case`, `chrono`, `collaborative`, `competencies`, `diary`, `discuss`, `download`, `explore`, `file`, `guide`, `history`, `info`, `interactive`, `math`, `objectives`, `observe`, `play`, `present`, `reflection`, `roadmap`, `share`, `start`, `stop`, `technology`, `think`, `video`.
+### Iconos Vectoriales Disponibles (`theme/icons/` - formato SVG)
+`activity`, `agreement`, `alert`, `arts`, `ask`, `book`, `calculate`, `case`, `chrono`, `collaborative`, `competencies`, `diary`, `diary_alt`, `discuss`, `download`, `draw`, `english`, `experiment`, `explore`, `file`, `gallery`, `geography`, `guide`, `history`, `info`, `interactive`, `letters`, `listen`, `math`, `music`, `nature`, `objectives`, `observe`, `passport`, `perform`, `piece`, `pieces`, `play`, `present`, `reflection`, `roadmap`, `share`, `sport`, `start`, `stop`, `suitcase`, `technology`, `think`, `think_alt`, `video`.
 
 ---
 
@@ -115,20 +120,63 @@ var PREGUNTAS = [
 ];
 ```
 
-### Características del Motor de Evaluación:
-- **Navegación Pregunta a Pregunta (1 en 1)**: El alumno visualiza una única pregunta por pantalla, pudiendo avanzar con `Siguiente`, retroceder con `Anterior` o saltar directamente mediante la barra de píldoras numeradas (`1..20`).
-- **Muestreo Aleatorio (ej. 20 de 50)**: En cada intento del alumno, el motor selecciona aleatoriamente 20 preguntas sin repetición del banco total.
-- **Sin Patrones Predecibles (Guardián Anti-Patrón)**: Las alternativas se barajan dinámicamente y el algoritmo previene rachas consecutivas (evita secuencias como A, A, A o ciclos A, B, C, D), logrando una distribución equilibrada y auténticamente aleatoria.
-- **Revisión y SCORM 1.2**: Tras corregir, las píldoras se tiñen de verde (acierto) o rojo (fallo), se muestra el porcentaje obtenido, se envía la nota al Libro de Calificaciones de Moodle/EducaMadrid (`cmi.core.score.raw`), y se permite revisar todas las explicaciones o reintentar con un nuevo test aleatorio.
+---
+
+## 🔍 Problema: "No intentado" y "El puntaje de dominio anula el estado"
+
+### ¿Qué significa "El puntaje de dominio anula el estado" en Moodle?
+En Moodle / EducaMadrid, cada actividad SCORM cuenta con un ajuste interno denominado **"El puntaje de dominio anula el estado"** (`Mastery score overrides status`), el cual viene activado por defecto (`Sí`).
+- **Comportamiento**: Si el paquete SCORM define un puntaje de dominio (*mastery score*) o si Moodle evalúa la calificación del paquete:
+  1. Cuando finaliza la sesión (`LMSFinish`), Moodle comprueba la nota enviada en `cmi.core.score.raw`.
+  2. Si la nota es **igual o superior** al puntaje de dominio, Moodle fija el estado como **`Aprobado` (passed)**.
+  3. Si la nota es **inferior** al puntaje de dominio, Moodle **anula** cualquier estado previo (incluso si era "completado") y lo fuerza a **`Reprobado` (failed)**.
+  4. Si **no se registró ninguna puntuación** (el alumno navegó pero no envió nota de cuestionario), Moodle no puede certificar la superación.
+
+### ¿Por qué a algunos alumnos que finalizan el curso les figura "No intentado" (*not attempted*)?
+Existen **4 causas técnicas combinadas** que provocan este error:
+
+1. **Bug en el ciclo de vida de `SCOFunctions.js` (SCORM 1.2)**:
+   - Al cargar la página, el script original ejecutaba `scorm.SetCompletionStatus("unknown")`.
+   - En SCORM 1.2 **no existe el estado "unknown"** (solo en SCORM 2004). El conector de SCORM 1.2 traducía `"unknown"` a `"not attempted"`.
+   - Como resultado, ¡cada vez que el alumno abría una página, su estado se reiniciaba forzosamente a *"No intentado"*!
+   - **Solución aplicada en la plantilla 2026**: Se sustituyó por `"incomplete"`. En cuanto el alumno entra, Moodle registra que la actividad está *En curso / Incompleta*, garantizando que nunca quede como *No intentado*.
+
+2. **Cierre abrupto de la pestaña o ventana del navegador**:
+   - Cuando el alumno finaliza la lectura o el test y cierra directamente la ventana pulsando la **'X'** del navegador:
+   - Los navegadores modernos (Chrome, Edge, Firefox) **bloquean o cancelan peticiones de red síncronas en el evento `unload`**.
+   - Al cancelarse la llamada `LMSFinish()` / `LMSCommit()`, la sesión queda huérfana en el servidor y Moodle conserva el estado previo con el que abrió la página.
+   - **Solución aplicada en la plantilla 2026**:
+     - Se añadió un botón destacado: **`💾 Confirmar y Guardar Calificación Oficial`**.
+     - Al corregir el examen, el botón ejecuta inmediatamente `s.save()` (`LMSCommit`), confirma el envío con el servidor y llama de forma limpia a `s.quit()` (`LMSFinish`) antes de cerrar la ventana.
+
+3. **Incompatibilidad entre Criterios de Finalización de Moodle**:
+   - Si en los ajustes de Moodle (*Finalización de actividad*) se configura:
+     - *"El estudiante debe recibir una calificación para finalizar"* y *"Requerir calificación aprobatoria"*.
+   - Y el alumno obtiene una nota por debajo del corte (por ejemplo 45% cuando el corte es 50%):
+     - La opción *"El puntaje de dominio anula el estado"* anula la finalización y marca el intento como *reprobado*.
+     - Para Moodle la actividad no cuenta como superada y en el Libro de Calificaciones no se computa como finalizada.
+
+4. **Multi-SCO: Páginas teóricas vs Página de evaluación**:
+   - En un paquete multi-página, las páginas de teoría no reportan nota (`cmi.core.score.raw`), solo el cuestionario lo hace.
+   - Si el método de calificación de Moodle está en *"Calificación más alta"* pero el alumno no completó el test, no existe nota que asignar en el Libro de Calificaciones.
 
 ---
 
-## 📤 Entrega en EducaMadrid / Moodle
+## ⚙️ Configuración Recomendada en EducaMadrid / Moodle
 
-1. En tu curso del Aula Virtual, activa la edición.
-2. Selecciona **"Añadir una actividad o recurso"** ➡️ **"Paquete SCORM"**.
-3. Sube el archivo **`.zip`** generado por `build.py` (sin descomprimir).
-4. Configura intentos y calificación según prefieras y guarda los cambios.
+Para asegurar que el 100% de los alumnos registren su nota y estado correctamente:
+
+### 1. En los Ajustes del Paquete SCORM en el Aula Virtual:
+- **Calificación**:
+  - **Método de calificación**: `Calificación más alta` (si tiene cuestionario) o `Objetos de aprendizaje` (si es solo lectura).
+  - **Calificación máxima**: `10` o `100` (coincidente con la escala del curso).
+- **Ajustes de compatibilidad**:
+  - **El puntaje de dominio anula el estado**:
+    - Si deseas que los alumnos que no alcancen el corte aprueben por el mero hecho de ver el contenido: marcar **`No`**.
+    - Si deseas exigir que aprueben el test con la nota mínima para considerar la actividad superada: dejar en **`Sí`** (asegurando que la nota de corte en Moodle coincida con `PASS` en `course_spec.py`).
+- **Finalización de actividad**:
+  - Elegir: *"Mostrar la actividad como completada cuando se cumplan las condiciones"*.
+  - Marcar: **`Requerir estado: Pasado`** y **`Requerir estado: Completado`** (marcar ambas casillas para admitir tanto si el LMS evalúa superación como si evalúa completitud).
 
 ---
 
@@ -146,10 +194,6 @@ GDRIVE_AUTO_EXPORT = True # Activa la exportación al compilar
 ```
 
 ### Métodos de Entrega Soportados:
-1. **Google Drive for Desktop (Sincronización en segundo plano)**:
-   - Al ejecutar `build.py`, si la aplicación Google Drive for Desktop está iniciada, detecta la unidad virtual (`G:\Mi unidad` o `/mnt/g/`) y deposita el `.zip` directamente para que se sincronice en la nube.
-2. **Google Drive API v3 (Subida directa a la nube)**:
-   - Si se coloca un archivo `credentials.json` o `token.json` (OAuth2 o cuenta de servicio), el script sube y actualiza el archivo en Google Drive automáticamente mediante la API.
-3. **Repositorio local y enlace de entrega**:
-   - Guarda una copia de seguridad en tu carpeta de entregas (`H:\0-TRAINING\Scorm` y `Descargas`) y muestra en la consola el enlace web directo a la carpeta de Google Drive para subir con un solo clic.
-
+1. **Google Drive for Desktop (Sincronización en segundo plano)**: Detecta la unidad virtual (`G:\Mi unidad` o `/mnt/g/`) y deposita el `.zip` automáticamente.
+2. **Google Drive API v3 (Subida directa a la nube)**: Mediante `credentials.json` o `token.json` sube directamente vía API.
+3. **Repositorio local y enlace de entrega**: Guarda copia de respaldo en `H:\0-TRAINING\Scorm` y `Descargas`.

@@ -26,7 +26,8 @@
   </div>
 </div>
 
-<div class="quiz-actions" style="margin-top:1em;">
+<div class="quiz-actions" style="margin-top:1em;display:flex;gap:.6em;flex-wrap:wrap;">
+  <button type="button" id="btn-salir-scorm" class="btn-curso" style="display:none;background:#2a9d6e;">💾 Confirmar y Guardar Calificación Oficial</button>
   <button type="button" id="btn-reintentar" class="btn-curso sec" style="display:none;">Volver a intentarlo (Nuevo test aleatorio)</button>
   <button type="button" id="btn-toggle-view" class="btn-curso sec" style="display:none;">Ver todas las preguntas para repaso</button>
 </div>
@@ -360,6 +361,7 @@ function corregir(){
   reportarSCORM(pct, passed);
 
   document.getElementById("btn-corregir").style.display = "none";
+  document.getElementById("btn-salir-scorm").style.display = "inline-block";
   document.getElementById("btn-reintentar").style.display = "inline-block";
   document.getElementById("btn-toggle-view").style.display = "inline-block";
 
@@ -399,6 +401,7 @@ function reportarSCORM(pct, passed){
     s.SetScoreMax(100);
     s.SetScoreRaw(pct);
     s.SetCompletionScormActivity(passed ? "passed" : "failed");
+    s.SetCompletionStatus(passed ? "completed" : "incomplete");
     if(typeof exitPageStatus !== "undefined"){
       exitPageStatus = true;
     }
@@ -406,10 +409,41 @@ function reportarSCORM(pct, passed){
   } catch(e){}
 }
 
+function salirYGuardarSCORM(){
+  try {
+    if(typeof pipwerks !== "undefined" && pipwerks.SCORM){
+      var s = pipwerks.SCORM;
+      if(typeof computeTime === "function"){
+        computeTime();
+      }
+      s.SetExit("normal");
+      s.save();
+      s.quit();
+    }
+  } catch(e){}
+  alert("✓ Tu intento y calificación oficial han sido registrados correctamente en el Libro de Calificaciones de la plataforma.\n\nYa puedes cerrar esta ventana con total tranquilidad.");
+  try { window.close(); } catch(e){}
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   renderQuiz();
   document.getElementById("btn-corregir").addEventListener("click", corregir);
   document.getElementById("btn-reintentar").addEventListener("click", reintentar);
   document.getElementById("btn-toggle-view").addEventListener("click", toggleView);
+  var btnSalir = document.getElementById("btn-salir-scorm");
+  if(btnSalir){
+    btnSalir.addEventListener("click", salirYGuardarSCORM);
+  }
+
+  // Asegurar que al acceder al cuestionario, el estado se marque como 'incomplete' y nunca 'not attempted'
+  try {
+    if(typeof pipwerks !== "undefined" && pipwerks.SCORM){
+      var stat = pipwerks.SCORM.GetCompletionStatus();
+      if(stat === "not attempted" || !stat || stat === "unknown" || stat === "null"){
+        pipwerks.SCORM.SetCompletionStatus("incomplete");
+        pipwerks.SCORM.save();
+      }
+    }
+  } catch(e){}
 });
 </script>

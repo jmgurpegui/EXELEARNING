@@ -42,7 +42,7 @@ def head(slug, title, extra_head=""):
 <html lang="es" id="exe-index">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="eXeLearning v4.0.3">
+<meta name="generator" content="eXeLearning v4.0.1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="license" type="text/html" href="https://creativecommons.org/licenses/by-sa/4.0/">
 <title>{_html.escape(title)} | {_html.escape(COURSE)}</title>
@@ -58,6 +58,8 @@ def head(slug, title, extra_head=""):
 <link rel="stylesheet" href="{p}libs/bootstrap/bootstrap.min.css">
 <script src="{p}idevices/text/text.js"></script>
 <link rel="stylesheet" href="{p}idevices/text/text.css">
+<script src="{p}libs/exe_atools/exe_atools.js"> </script>
+<link rel="stylesheet" href="{p}libs/exe_atools/exe_atools.css">
 <script src="{p}libs/exe_effects/exe_effects.js"> </script>
 <link rel="stylesheet" href="{p}libs/exe_effects/exe_effects.css">
 <link rel="stylesheet" href="{p}content/css/base.css">
@@ -111,9 +113,10 @@ def box(title, icon, inner, no_header=False, prefix=""):
                 f'<button class="box-toggle box-toggle-on" title="Mostrar/ocultar"><span>Mostrar/ocultar</span></button>'
                 f'</header>\n<div class="box-content">\n'
                 f'<div class="exe-static-content">\n{inner}\n</div>\n</div>\n</article>')
+    icon_file = icon if ("." in icon) else f"{icon}.svg"
     return (f'<article class="box">\n'
             f'<header class="box-head">\n'
-            f'<div class="box-icon exe-icon"><img src="{prefix}theme/icons/{icon}.png" alt=""></div>\n'
+            f'<div class="box-icon exe-icon"><img src="{prefix}theme/icons/{icon_file}" alt=""></div>\n'
             f'<h1 class="box-title">{_html.escape(title)}</h1>\n'
             f'<button class="box-toggle box-toggle-on" title="Mostrar/ocultar"><span>Mostrar/ocultar</span></button>'
             f'</header>\n<div class="box-content">\n'

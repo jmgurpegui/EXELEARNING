@@ -65,7 +65,6 @@ var $form = {
 
     scormAPIwrapper: 'libs/SCORM_API_wrapper.js',
     scormFunctions: 'libs/SCOFunctions.js',
-
     renderView: function (data, accesibility, template, ideviceId) {
         const ldata = this.updateConfig(data, ideviceId);
         let display = $('body').hasClass('exe-export') ? 'none' : '';
@@ -139,7 +138,7 @@ var $form = {
         this.idevicePath = this.isInExe
             ? eXe.app.getIdeviceInstalledExportPath('form')
             : $('.idevice_node.form').eq(0).attr('data-idevice-path');
-        const data = JSON.parse(JSON.stringify(odata || {}));
+        const data = JSON.parse(JSON.stringify(odata));
         data.msgs = $form.mergeFields(data.msgs, $form.msgs);
         data.id = ideviceId || data.ideviceId || data.id;
         data.evaluation = data.evaluation || false;
@@ -203,7 +202,7 @@ var $form = {
     renderBehaviour: function (data, accesibility, ideviceId) {
         const ldata = this.updateConfig(data, ideviceId);
         const addBtnAnswers = ldata.addBtnAnswers;
-        if (!ldata.questionsData.length) return;
+        if (!ldata.questionsData) return;
         const questionsHtml = $form.getHtmlFormView(ldata.questionsData, ldata);
         $('#form-questions-' + ldata.id).empty();
         $('#form-questions-' + ldata.id).append(questionsHtml);
@@ -594,17 +593,13 @@ var $form = {
                         .text(mOptions.current + 1 + '/' + total);
                     clearPreviousMathInWrapper($wrapper.get(0));
                     setTimeout(function () {
-                        // Only invoke MathJax when the freshly shown slide still
-                        // holds unrendered LaTeX: pre-rendered exports ship no
-                        // MathJax engine, so an unconditional call would 404.
-                        // hasLatex ignores already-rendered math (see common.js).
-                        const math =
-                            $exeDevices?.iDevice?.gamification?.math;
                         if (
-                            math?.updateLatex &&
-                            math.hasLatex($wrapper.html() || '')
+                            $exeDevices?.iDevice?.gamification?.math
+                                ?.updateLatex
                         )
-                            math.updateLatex('.FRMP-SlideshowWrapper');
+                            $exeDevices.iDevice.gamification.math.updateLatex(
+                                '.FRMP-SlideshowWrapper'
+                            );
                     }, 1000);
                 }
 
@@ -623,14 +618,10 @@ var $form = {
             } else if (total === 1) {
                 clearPreviousMathInWrapper($wrapper.get(0));
                 setTimeout(function () {
-                    // See goTo(): skip MathJax when no raw LaTeX remains so
-                    // pre-rendered exports never request the absent engine.
-                    const math = $exeDevices?.iDevice?.gamification?.math;
-                    if (
-                        math?.updateLatex &&
-                        math.hasLatex($wrapper.html() || '')
-                    )
-                        math.updateLatex('.FRMP-SlideshowWrapper');
+                    if ($exeDevices?.iDevice?.gamification?.math?.updateLatex)
+                        $exeDevices.iDevice.gamification.math.updateLatex(
+                            '.FRMP-SlideshowWrapper'
+                        );
                 }, 1000);
             }
         }
@@ -726,16 +717,9 @@ var $form = {
                 }
             }
         }, 1000);
-        // Only typeset when the timed game body still contains raw LaTeX:
-        // pre-rendered exports bundle no MathJax engine (see common.js hasLatex).
-        const mainSelector = '#frmMainContainer-' + data.id;
-        if (
-            $exeDevices.iDevice.gamification.math.hasLatex(
-                $(mainSelector).html() || ''
-            )
-        ) {
-            $exeDevices.iDevice.gamification.math.updateLatex(mainSelector);
-        }
+        $exeDevices.iDevice.gamification.math.updateLatex(
+            '#frmMainContainer-' + data.id
+        );
         setTimeout(function () {
             $form.resizeSlideShow(data);
         }, 100);
@@ -1236,41 +1220,6 @@ var $form = {
     },
 
     /**
-     * Escape plain-text content but keep pre-rendered math spans intact.
-     *
-     * Selection option text is authored as plain text and escaped to prevent
-     * HTML/script injection. During export, LaTeX in it is pre-rendered to
-     * <span class="exe-math-rendered">SVG</span>; this helper escapes everything
-     * EXCEPT those spans, so the math shows as SVG without bundling MathJax —
-     * while a stray "<" in plain text is still escaped (mirrors adaptative-quiz).
-     *
-     * Security: only spans matching our exact pre-renderer output AND carrying no
-     * script-bearing markup are kept raw. A forged span typed into a plain-text
-     * field (e.g. with an onerror handler) fails the strict pattern or the
-     * denylist and is escaped, preserving the XSS boundary.
-     *
-     * @param {String} str
-     * @returns {String}
-     */
-    escapeHtmlButKeepRenderedMath(str) {
-        const text = String(str ?? '');
-        const RENDERED_MATH =
-            /<span class="exe-math-rendered" data-latex="[^"]*"(?: data-display="block")?><svg\b[\s\S]*?<\/svg>(?:<math\b[\s\S]*?<\/math>)?<\/span>/g;
-        const UNSAFE = /<script|<foreignobject|<iframe|<animate|<set\b|javascript:|\son\w+\s*=/i;
-        let out = '';
-        let last = 0;
-        let match;
-        RENDERED_MATH.lastIndex = 0;
-        while ((match = RENDERED_MATH.exec(text)) !== null) {
-            out += this.escapeHtmlText(text.slice(last, match.index));
-            out += UNSAFE.test(match[0]) ? this.escapeHtmlText(match[0]) : match[0];
-            last = match.index + match[0].length;
-        }
-        out += this.escapeHtmlText(text.slice(last));
-        return out;
-    },
-
-    /**
      * Processes text for selection questions
      *
      * @param {*} baseText
@@ -1294,7 +1243,7 @@ var $form = {
             htmlSelection += `<div class="inline button-response-form">`;
             htmlSelection += `<input type="${optionType}" name="${id}_SelectionQuestion" id="${id}_option_${index + 1}" value="${this.escapeHtmlAttr(option[1])}">`;
             htmlSelection += `<label for="${id}_option_${index + 1}">`;
-            htmlSelection += this.escapeHtmlButKeepRenderedMath(option[1]);
+            htmlSelection += this.escapeHtmlText(option[1]);
             htmlSelection += `</label>`;
             htmlSelection += `</div>`;
             if (option[0]) {

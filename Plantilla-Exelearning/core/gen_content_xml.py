@@ -55,12 +55,12 @@ def build_signatures(pkg):
     out.append('<!DOCTYPE ode SYSTEM "content.dtd">')
     out.append('<ode xmlns="http://www.intef.es/xsd/ode" version="2.0">')
     out.append('<userPreferences>')
-    out.append('  <userPreference><key>theme</key><value>base</value></userPreference>')
+    out.append('  <userPreference><key>theme</key><value>zen</value></userPreference>')
     out.append('</userPreferences>')
     out.append('<odeResources>')
     out.append(f'  <odeResource><key>odeId</key><value>{ode_id}</value></odeResource>')
     out.append(f'  <odeResource><key>odeVersionId</key><value>{ode_ver}</value></odeResource>')
-    out.append('  <odeResource><key>exe_version</key><value>4.0.3</value></odeResource>')
+    out.append('  <odeResource><key>exe_version</key><value>4.0.1</value></odeResource>')
     out.append('</odeResources>')
 
     author = getattr(gen_common, "AUTHOR", AUTHOR)
@@ -75,13 +75,13 @@ def build_signatures(pkg):
         ("pp_lang", "es"),
         ("pp_license", license_str),
         ("pp_licenseUrl", license_url),
-        ("pp_theme", "base"),
-        ("pp_exelearning_version", "v4.0.3"),
+        ("pp_theme", "zen"),
+        ("pp_exelearning_version", "v4.0.1"),
         ("pp_modified", modified_ms),
         ("pp_addExeLink", "true"),
-        ("pp_addPagination", "false"),
+        ("pp_addPagination", "true"),
         ("pp_addSearchBox", "false"),
-        ("pp_addAccessibilityToolbar", "false"),
+        ("pp_addAccessibilityToolbar", "true"),
         ("pp_addMathJax", "false"),
         ("exportSource", "true"),
         ("pp_globalFont", "default"),

@@ -757,14 +757,6 @@ html:not(.mode-teacher) .js .teacher-only {
     font-size: 0.95em;
 }
 
-/* Footer with neither license nor "Page footer" content: themes give #siteFooter
-   a background and border, so an empty one shows as a stray bar. Hidden here so
-   every theme (including custom ones) gets it, and so a theme that wants to keep
-   showing it can opt out by overriding display. */
-#siteFooter.siteFooter-empty {
-    display: none;
-}
-
 /* Skip navigation link */
 #skipNav {
     position: fixed;
@@ -804,3 +796,12 @@ html:not(.mode-teacher) .js .teacher-only {
         padding-top: 40px;
     }
 }
+/* Pre-rendered LaTeX (SVG+MathML) - MathJax not included */
+.exe-math-rendered { display: inline-block; vertical-align: middle; }
+.exe-math-rendered[data-display="block"] { display: block; text-align: center; margin: 1em 0; }
+.exe-math-rendered svg { vertical-align: middle; max-width: 100%; height: auto; }
+/* Fix for MathJax array/table borders - SVG has stroke-width:0 which hides lines */
+.exe-math-rendered svg line.mjx-solid { stroke-width: 60 !important; }
+.exe-math-rendered svg rect[data-frame="true"] { fill: none; stroke-width: 60 !important; }
+/* Hide MathML visually but keep accessible for screen readers */
+.exe-math-rendered math { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
