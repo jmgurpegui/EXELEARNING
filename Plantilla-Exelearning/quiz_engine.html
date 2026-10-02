@@ -34,7 +34,7 @@
 
 <!-- Tarjeta de calificación y reporte SCORM 1.2 -->
 <div id="quiz-result">
-  <div class="res-head"><h3 id="res-title"></h3><div class="res-score"><span id="res-pct">0</span>%</div><div id="res-line"></div></div>
+  <div class="res-head"><h3 id="res-title"></h3><div class="res-score"><span id="res-nota-txt">0 / 10</span> <small style="font-size:0.6em;opacity:0.85;">(<span id="res-pct">0</span>%)</small></div><div id="res-line"></div></div>
   <div class="res-body">
     <p id="res-msg"></p>
     <p class="aviso-scorm">La calificación oficial se registra automáticamente en el Libro de Calificaciones de EducaMadrid / Moodle mediante SCORM 1.2.</p>
@@ -53,7 +53,8 @@
 */
 /*__PREGUNTAS__*/
 
-var NUM_PREGUNTAS = (typeof NUM_PREGUNTAS !== "undefined") ? NUM_PREGUNTAS : 20;
+var SCORE_SCALE = (typeof SCORE_SCALE !== "undefined") ? SCORE_SCALE : 10;
+var NUM_PREGUNTAS = (typeof NUM_PREGUNTAS !== "undefined") ? NUM_PREGUNTAS : 10;
 var RANDOMIZE_OPTIONS = (typeof RANDOMIZE_OPTIONS !== "undefined") ? RANDOMIZE_OPTIONS : true;
 var PASS = (typeof PASS !== "undefined") ? PASS : 50;
 
@@ -350,11 +351,17 @@ function corregir(){
 
   res.classList.remove("pass", "fail");
   res.classList.add(passed ? "pass" : "fail");
-  document.getElementById("res-title").textContent = passed ? "¡Cuestionario superado!" : "Evaluación no superada";
+  document.getElementById("res-title").textContent = passed ? "¡Evaluación superada!" : "Evaluación no superada";
   document.getElementById("res-pct").textContent = pct;
+  var scale = (typeof SCORE_SCALE !== "undefined") ? SCORE_SCALE : 10;
+  var rawScore = (scale === 10) ? (Math.round(pct) / 10).toFixed(1) : pct;
+  var txtNota = document.getElementById("res-nota-txt");
+  if(txtNota){
+    txtNota.textContent = (scale === 10) ? (rawScore + " / 10") : (pct + " / 100");
+  }
   document.getElementById("res-line").innerHTML = "<strong>" + ok + " de " + total + "</strong> respuestas correctas (Nota mínima: " + PASS + "%)";
   document.getElementById("res-msg").textContent = passed ? 
-    "¡Enhorabuena! Has asimilado los conocimientos técnicos del curso con éxito." : 
+    "¡Enhorabuena! Has asimilado los conocimientos técnicos del módulo con éxito." : 
     "No has alcanzado la nota de corte mínima (" + PASS + "%). Revisa las explicaciones de cada pregunta para afianzar conceptos y vuelve a intentarlo.";
 
   res.style.display = "block";
@@ -397,11 +404,17 @@ function reportarSCORM(pct, passed){
   try {
     if(typeof pipwerks === "undefined" || !pipwerks.SCORM) return;
     var s = pipwerks.SCORM;
+    var scale = (typeof SCORE_SCALE !== "undefined") ? SCORE_SCALE : 10;
+    var rawScore = (scale === 10) ? Math.round(pct) / 10 : pct;
+
     s.SetScoreMin(0);
-    s.SetScoreMax(100);
-    s.SetScoreRaw(pct);
+    s.SetScoreMax(scale);
+    s.SetScoreRaw(rawScore);
+
+    // En SCORM 1.2: El estado oficial para el Cuestionario SCORM debe ser "passed" o "failed".
+    // NO llamar a SetCompletionStatus("completed") para no sobrescribir cmi.core.lesson_status.
     s.SetCompletionScormActivity(passed ? "passed" : "failed");
-    s.SetCompletionStatus(passed ? "completed" : "incomplete");
+
     if(typeof exitPageStatus !== "undefined"){
       exitPageStatus = true;
     }

@@ -155,7 +155,7 @@ def generate_pages(gen_common, course_spec, pkg_dir):
     BODIES = course_spec.BODIES
     for pg in PAGES:
         slug = pg["slug"]
-        is_sc = (slug == "cuestionario" or len(PAGES) == 1 or pg.get("is_scorm", False))
+        is_sc = (slug in ["evaluacion-final", "cuestionario", "evaluacion"] or pg.get("is_scorm", False) or len(PAGES) == 1)
         onunload = 'unloadPage(true)' if is_sc else 'unloadPage()'
         out = gen_common.page(slug, pg["title"], BODIES[slug], onunload=onunload)
         path = os.path.join(pkg_dir, "index.html") if slug == "index" else os.path.join(pkg_dir, "html", f"{slug}.html")
@@ -176,9 +176,16 @@ def generate_manifest(gen_common, ode_id, pkg_dir):
     page_hrefs = set(page_href.values())
     assets = sorted(f for f in asset_files if f not in page_hrefs)
 
-    org_items = "\n".join(
-        f'      <item identifier="ITEM-{pg["pid"]}" identifierref="RES-{pg["pid"]}" isvisible="true">\n'
-        f'        <title>{_html.escape(pg["title"])}</title>\n      </item>' for pg in PAGES)
+    org_items_list = []
+    for pg in PAGES:
+        slug = pg["slug"]
+        is_sc = (slug in ["evaluacion-final", "cuestionario", "evaluacion"] or pg.get("is_scorm", False) or len(PAGES) == 1)
+        # En SCORM 1.2: Para el Cuestionario SCORM evaluable incluimos el masteryscore oficial (5 sobre 10)
+        mastery_tag = '\n        <adlcp:masteryscore>5</adlcp:masteryscore>' if is_sc else ''
+        org_items_list.append(
+            f'      <item identifier="ITEM-{pg["pid"]}" identifierref="RES-{pg["pid"]}" isvisible="true">\n'
+            f'        <title>{_html.escape(pg["title"])}</title>{mastery_tag}\n      </item>')
+    org_items = "\n".join(org_items_list)
 
     res_blocks = []
     for pg in PAGES:
